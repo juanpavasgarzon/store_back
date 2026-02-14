@@ -1,0 +1,15 @@
+services:
+  app:
+    build:
+      context: .
+      target: production
+    container_name: store_back_app
+    restart: unless-stopped
+    ports:
+      - "3000:${PORT:-3000}"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+
