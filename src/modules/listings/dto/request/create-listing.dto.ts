@@ -10,11 +10,6 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class ListingPhotoDto {
-  @IsString()
-  url: string;
-}
-
 export class ListingVariantValueDto {
   @IsUUID()
   categoryVariantId: string;
@@ -56,12 +51,6 @@ export class CreateListingRequestDto {
   @Type(() => Number)
   @IsNumber()
   longitude?: number;
-
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => ListingPhotoDto)
-  photos?: ListingPhotoDto[];
 
   @IsOptional()
   @IsArray()

@@ -2,7 +2,7 @@ import { Injectable, ForbiddenException } from '@nestjs/common';
 import { SaveContactConfigUseCase } from './save-contact-config.use-case';
 import type { IUser } from '../../../shared';
 import type { UpdateContactConfigRequestDto } from '../dto/request/contact-config.dto';
-import { ROLES } from '../../../shared/constants';
+import { ROLES } from '../../../shared/security';
 
 function hasPermission(user: IUser): boolean {
   return user.role === ROLES.OWNER;

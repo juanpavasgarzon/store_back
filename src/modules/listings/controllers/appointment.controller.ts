@@ -10,7 +10,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { CurrentUser, Public, RequirePermissions } from '../../../shared';
-import { PERMISSIONS } from '../../../shared/constants';
+import { PERMISSIONS } from '../../../shared/security';
 import type { IUser } from '../../../shared';
 import { CreateAppointmentUseCase } from '../use-cases/create-appointment.use-case';
 import { UpdateAppointmentUseCase } from '../use-cases/update-appointment.use-case';

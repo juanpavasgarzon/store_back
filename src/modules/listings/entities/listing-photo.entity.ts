@@ -17,6 +17,9 @@ export class ListingPhoto {
   @Column('uuid')
   listingId: string;
 
+  @Column({ length: 255 })
+  filename: string;
+
   @Column({ length: 512 })
   url: string;
 

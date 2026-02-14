@@ -1,7 +1,7 @@
 import { Controller, Get, Put, Body, Res, HttpCode, HttpStatus } from '@nestjs/common';
 import type { Response } from 'express';
 import { CurrentUser, RequirePermissions } from '../../../shared';
-import { PERMISSIONS } from '../../../shared/constants';
+import { PERMISSIONS } from '../../../shared/security';
 import type { IUser } from '../../../shared';
 import { UpdateContactConfigUseCase } from '../use-cases/update-contact-config.use-case';
 import { GetContactConfigUseCase } from '../use-cases/get-contact-config.use-case';

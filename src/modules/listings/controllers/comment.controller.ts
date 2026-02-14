@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, Query, HttpCode, HttpStatus } from '@nestjs/common';
 import { CurrentUser, Public, RequirePermissions } from '../../../shared';
-import { PERMISSIONS } from '../../../shared/constants';
+import { PERMISSIONS } from '../../../shared/security';
 import type { IUser } from '../../../shared';
 import { CreateCommentUseCase } from '../use-cases/create-comment.use-case';
 import { ListCommentsUseCase } from '../use-cases/list-comments.use-case';

@@ -11,7 +11,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Public, RequirePermissions } from '../../../shared';
-import { PERMISSIONS } from '../../../shared/constants';
+import { PERMISSIONS } from '../../../shared/security';
 import { CreateListingUseCase } from '../use-cases/create-listing.use-case';
 import { UpdateListingUseCase } from '../use-cases/update-listing.use-case';
 import { DeleteListingUseCase } from '../use-cases/delete-listing.use-case';

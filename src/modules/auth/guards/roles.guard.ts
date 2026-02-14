@@ -1,9 +1,9 @@
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import type { Permission } from '../../../shared';
-import { ROLE_PERMISSIONS } from '../../../shared/constants';
+import { ROLE_PERMISSIONS } from '../../../shared/security';
 import type { User } from '../../users/entities/user.entity';
-import { IS_PUBLIC_KEY, PERMISSIONS_KEY } from '../../../shared';
+import { IS_PUBLIC_KEY, PERMISSIONS_KEY } from '../../../shared/security';
 
 @Injectable()
 export class RolesGuard implements CanActivate {

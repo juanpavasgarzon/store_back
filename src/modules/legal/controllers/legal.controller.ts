@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, HttpCode, HttpStatus } from '@nestjs/common';
 import { CurrentUser, Public, RequirePermissions } from '../../../shared';
-import { PERMISSIONS } from '../../../shared/constants';
+import { PERMISSIONS } from '../../../shared/security';
 import type { IUser } from '../../../shared';
 import { GetLegalDocumentUseCase } from '../use-cases/get-legal-document.use-case';
 import { ListLegalDocumentsUseCase } from '../use-cases/list-legal-documents.use-case';

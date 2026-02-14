@@ -26,12 +26,19 @@ export class AllExceptionsFilter implements ExceptionFilter {
       typeof rawResponse === 'object' && rawResponse !== null
         ? (rawResponse as HttpExceptionResponseBody)
         : undefined;
-    const message =
+    let message =
       exception instanceof HttpException
         ? (body?.message ?? exception.message)
         : exception instanceof Error
           ? exception.message
           : 'Internal server error';
+    const isDefaultUnauthorized =
+      status === 401 &&
+      (message === 'Unauthorized' || (Array.isArray(message) && message.includes('Unauthorized')));
+    if (isDefaultUnauthorized) {
+      message =
+        'Authentication required. Send a valid JWT in the header: Authorization: Bearer <token>';
+    }
 
     if (status >= 500) {
       this.logger.error(

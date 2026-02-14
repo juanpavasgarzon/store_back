@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { LegalDocument } from '../entities/legal-document.entity';
 import type { IUser } from '../../../shared';
 import type { UpsertLegalDocumentRequestDto } from '../dto/request/upsert-legal-document.dto';
-import { ROLES } from '../../../shared/constants';
+import { ROLES } from '../../../shared/security';
 
 @Injectable()
 export class UpsertLegalDocumentUseCase {

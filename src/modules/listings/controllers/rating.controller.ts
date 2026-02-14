@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, HttpCode, HttpStatus } from '@nestjs/common';
 import { CurrentUser, Public, RequirePermissions } from '../../../shared';
-import { PERMISSIONS } from '../../../shared/constants';
+import { PERMISSIONS } from '../../../shared/security';
 import type { IUser } from '../../../shared';
 import { SetRatingUseCase } from '../use-cases/set-rating.use-case';
 import { GetListingRatingUseCase } from '../use-cases/get-listing-rating.use-case';

@@ -42,6 +42,9 @@ lerna-debug.log*
 .env.production.local
 .env.local
 
+# uploads (local dev; in Docker use volume)
+/uploads
+
 # temp directory
 .temp
 .tmp

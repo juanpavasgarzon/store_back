@@ -1,7 +1,7 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
 import { FindContactConfigUseCase } from './find-contact-config.use-case';
 import type { IUser } from '../../../shared';
-import { ROLES } from '../../../shared/constants';
+import { ROLES } from '../../../shared/security';
 
 @Injectable()
 export class GetContactConfigUseCase {

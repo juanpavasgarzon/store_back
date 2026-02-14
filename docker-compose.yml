@@ -11,12 +11,14 @@ services:
     environment:
       NODE_ENV: development
       PORT: 3000
+      UPLOADS_DIR: /app/uploads
     depends_on:
       db:
         condition: service_healthy
     volumes:
       - .:/app
       - app_node_modules:/app/node_modules
+      - ./uploads:/app/uploads
 
   db:
     image: postgres:16-alpine

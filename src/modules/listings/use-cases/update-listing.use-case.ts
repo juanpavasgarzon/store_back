@@ -2,7 +2,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Listing } from '../entities/listing.entity';
-import { ListingPhoto } from '../entities/listing-photo.entity';
 import { ListingVariantValue } from '../entities/listing-variant-value.entity';
 import { CategoryService } from '../../categories/services/category.service';
 import type { UpdateListingRequestDto } from '../dto/request/update-listing.dto';
@@ -12,8 +11,6 @@ export class UpdateListingUseCase {
   constructor(
     @InjectRepository(Listing)
     private readonly listingRepository: Repository<Listing>,
-    @InjectRepository(ListingPhoto)
-    private readonly listingPhotoRepository: Repository<ListingPhoto>,
     @InjectRepository(ListingVariantValue)
     private readonly listingVariantValueRepository: Repository<ListingVariantValue>,
     private readonly categoryService: CategoryService,
@@ -53,21 +50,6 @@ export class UpdateListingUseCase {
       listing.longitude = dto.longitude != null ? String(dto.longitude) : null;
     }
     await this.listingRepository.save(listing);
-    if (dto.photos != null) {
-      const existingPhotos = await this.listingPhotoRepository.find({
-        where: { listingId: id },
-      });
-      for (const photo of existingPhotos) {
-        await this.listingPhotoRepository.delete(photo.id);
-      }
-      for (const photoDto of dto.photos) {
-        const photo = this.listingPhotoRepository.create({
-          listingId: id,
-          url: photoDto.url,
-        });
-        await this.listingPhotoRepository.save(photo);
-      }
-    }
     if (dto.variants != null) {
       const existingVariantValues = await this.listingVariantValueRepository.find({
         where: { listingId: id },

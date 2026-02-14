@@ -1,5 +1,6 @@
 export interface ListingPhotoResponse {
   id: string;
+  filename: string;
   url: string;
 }
 

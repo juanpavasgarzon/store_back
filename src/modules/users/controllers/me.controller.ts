@@ -1,6 +1,6 @@
 import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
 import { CurrentUser, RequirePermissions } from '../../../shared';
-import { PERMISSIONS } from '../../../shared/constants';
+import { PERMISSIONS } from '../../../shared/security';
 import type { IUser } from '../../../shared';
 import { GetProfileUseCase } from '../use-cases/get-profile.use-case';
 import { MeProfileResponseDto } from '../dto/response/me-profile-response.dto';

@@ -10,7 +10,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { RequirePermissions } from '../../../shared';
-import { PERMISSIONS } from '../../../shared/constants';
+import { PERMISSIONS } from '../../../shared/security';
 import { CreateCategoryVariantUseCase } from '../use-cases/create-category-variant.use-case';
 import { UpdateCategoryVariantUseCase } from '../use-cases/update-category-variant.use-case';
 import { DeleteCategoryVariantUseCase } from '../use-cases/delete-category-variant.use-case';

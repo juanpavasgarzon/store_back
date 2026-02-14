@@ -1,6 +1,6 @@
 import { Controller, Get, Query, HttpCode, HttpStatus } from '@nestjs/common';
 import { RequirePermissions } from '../../../shared';
-import { PERMISSIONS } from '../../../shared/constants';
+import { PERMISSIONS } from '../../../shared/security';
 import { ListUsersUseCase } from '../use-cases/list-users.use-case';
 import { UserResponseDto } from '../dto/response/user-response.dto';
 import {

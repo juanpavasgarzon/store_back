@@ -12,4 +12,6 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-
+      UPLOADS_DIR: /app/uploads
+    volumes:
+      - ./uploads:/app/uploads

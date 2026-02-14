@@ -2,7 +2,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Listing } from '../entities/listing.entity';
-import { ListingPhoto } from '../entities/listing-photo.entity';
 import { ListingVariantValue } from '../entities/listing-variant-value.entity';
 import { CategoryService } from '../../categories/services/category.service';
 import { FindCategoryVariantByIdUseCase } from '../../categories/use-cases/find-category-variant-by-id.use-case';
@@ -14,8 +13,6 @@ export class CreateListingUseCase {
   constructor(
     @InjectRepository(Listing)
     private readonly listingRepository: Repository<Listing>,
-    @InjectRepository(ListingPhoto)
-    private readonly listingPhotoRepository: Repository<ListingPhoto>,
     @InjectRepository(ListingVariantValue)
     private readonly listingVariantValueRepository: Repository<ListingVariantValue>,
     private readonly categoryService: CategoryService,
@@ -51,18 +48,6 @@ export class CreateListingUseCase {
       longitude: dto.longitude != null ? String(dto.longitude) : null,
     });
     const listing = await this.listingRepository.save(listingEntity);
-
-    const photos: ListingPhoto[] = [];
-    for (const photo of dto.photos ?? []) {
-      const photoEntity = this.listingPhotoRepository.create({
-        listingId: listing.id,
-        url: photo.url,
-      });
-      photos.push(photoEntity);
-    }
-    if (photos.length > 0) {
-      await this.listingPhotoRepository.save(photos);
-    }
 
     const variants: ListingVariantValue[] = [];
     for (const variant of dto.variants ?? []) {

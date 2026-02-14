@@ -40,6 +40,7 @@ export class ListingResponseDto implements ListingResponseShape {
     this.updatedAt = listing.updatedAt;
     this.photos = listing.photos?.map((p) => ({
       id: p.id,
+      filename: p.filename,
       url: p.url,
     }));
     this.variants = listing.variants?.map((lv) => ({

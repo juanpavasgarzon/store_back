@@ -1,7 +1,7 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { UserService } from '../../users/services/user.service';
-import { ROLES } from '../../../shared/constants';
+import { ROLES } from '../../../shared/security';
 import type { IAuthResponse } from '../dto/response/auth-response.interface';
 import { RegisterRequestDto } from '../dto/request/register.dto';
 

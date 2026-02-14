@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import type { Role } from '../../../shared';
-import { ROLES } from '../../../shared/constants';
+import { ROLES } from '../../../shared/security';
 
 @Entity('users')
 export class User {

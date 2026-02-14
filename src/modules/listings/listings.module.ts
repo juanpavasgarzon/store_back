@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { MulterModule } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import { Listing } from './entities/listing.entity';
 import { ListingPhoto } from './entities/listing-photo.entity';
 import { ListingVariantValue } from './entities/listing-variant-value.entity';
@@ -13,6 +15,7 @@ import { FavoriteService } from './services/favorite.service';
 import { ContactRequestService } from './services/contact-request.service';
 import { AppointmentService } from './services/appointment.service';
 import { ListingController } from './controllers/listing.controller';
+import { ListingPhotoController } from './controllers/listing-photo.controller';
 import { CommentController } from './controllers/comment.controller';
 import { RatingController } from './controllers/rating.controller';
 import { FavoriteController } from './controllers/favorite.controller';
@@ -39,10 +42,14 @@ import { UpdateAppointmentUseCase } from './use-cases/update-appointment.use-cas
 import { DeleteAppointmentUseCase } from './use-cases/delete-appointment.use-case';
 import { ListMyAppointmentsUseCase } from './use-cases/list-my-appointments.use-case';
 import { ListListingAppointmentsUseCase } from './use-cases/list-listing-appointments.use-case';
+import { UploadListingPhotosUseCase } from './use-cases/upload-listing-photos.use-case';
+import { ListListingPhotosUseCase } from './use-cases/list-listing-photos.use-case';
+import { GetListingPhotoFileUseCase } from './use-cases/get-listing-photo-file.use-case';
 import { CategoriesModule } from '../categories/categories.module';
 
 @Module({
   imports: [
+    MulterModule.register({ storage: memoryStorage() }),
     TypeOrmModule.forFeature([
       Listing,
       ListingPhoto,
@@ -57,6 +64,7 @@ import { CategoriesModule } from '../categories/categories.module';
   ],
   controllers: [
     ListingController,
+    ListingPhotoController,
     CommentController,
     RatingController,
     FavoriteController,
@@ -89,6 +97,9 @@ import { CategoriesModule } from '../categories/categories.module';
     DeleteAppointmentUseCase,
     ListMyAppointmentsUseCase,
     ListListingAppointmentsUseCase,
+    UploadListingPhotosUseCase,
+    ListListingPhotosUseCase,
+    GetListingPhotoFileUseCase,
   ],
   exports: [FavoriteService, ContactRequestService, AppointmentService],
 })

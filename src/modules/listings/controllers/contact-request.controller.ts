@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Param, HttpCode, HttpStatus } from '@nestjs/common';
 import { CurrentUser, RequirePermissions } from '../../../shared';
-import { PERMISSIONS } from '../../../shared/constants';
+import { PERMISSIONS } from '../../../shared/security';
 import type { IUser } from '../../../shared';
 import { CreateContactRequestUseCase } from '../use-cases/create-contact-request.use-case';
 import { CreateContactRequestDto } from '../dto/request/create-contact-request.dto';

@@ -1,6 +1,6 @@
 import { Controller, Post, Delete, Param, HttpCode, HttpStatus } from '@nestjs/common';
 import { CurrentUser, RequirePermissions } from '../../../shared';
-import { PERMISSIONS } from '../../../shared/constants';
+import { PERMISSIONS } from '../../../shared/security';
 import type { IUser } from '../../../shared';
 import { AddFavoriteUseCase } from '../use-cases/add-favorite.use-case';
 import { RemoveFavoriteUseCase } from '../use-cases/remove-favorite.use-case';
