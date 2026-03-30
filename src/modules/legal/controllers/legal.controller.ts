@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Body, Param, HttpCode, HttpStatus } from '@nestjs/common';
-import { CurrentUser, Public, RequirePermissions } from '../../../shared';
+import { Public, RequirePermissions } from '../../../shared';
 import { PERMISSIONS } from '../../../shared/security';
-import type { IUser } from '../../../shared';
 import { GetLegalDocumentUseCase } from '../use-cases/get-legal-document.use-case';
 import { ListLegalDocumentsUseCase } from '../use-cases/list-legal-documents.use-case';
 import { UpsertLegalDocumentUseCase } from '../use-cases/upsert-legal-document.use-case';
@@ -35,11 +34,8 @@ export class LegalController {
   @RequirePermissions(PERMISSIONS.LEGAL_UPDATE)
   @Post()
   @HttpCode(HttpStatus.OK)
-  async upsert(
-    @CurrentUser() user: IUser,
-    @Body() dto: UpsertLegalDocumentRequestDto,
-  ): Promise<LegalDocumentResponseDto> {
-    const doc = await this.upsertLegalDocumentUseCase.execute(user, dto);
+  async upsert(@Body() dto: UpsertLegalDocumentRequestDto): Promise<LegalDocumentResponseDto> {
+    const doc = await this.upsertLegalDocumentUseCase.execute(dto);
     return new LegalDocumentResponseDto(doc);
   }
 }

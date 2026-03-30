@@ -1,4 +1,5 @@
 import { Controller, Post, Body, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { LoginUseCase } from '../use-cases/login.use-case';
 import { RegisterUseCase } from '../use-cases/register.use-case';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
@@ -16,6 +17,7 @@ export class AuthController {
   ) {}
 
   @Public()
+  @Throttle({ default: { ttl: 60000, limit: 5 } })
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @HttpCode(HttpStatus.OK)

@@ -3,6 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Appointment } from '../entities/appointment.entity';
 import { Listing } from '../entities/listing.entity';
+import {
+  paginate,
+  SortOrder,
+  type PaginationQuery,
+  type PaginationResult,
+} from '../../../shared/pagination';
 
 @Injectable()
 export class ListListingAppointmentsUseCase {
@@ -13,15 +19,18 @@ export class ListListingAppointmentsUseCase {
     private readonly listingRepository: Repository<Listing>,
   ) {}
 
-  async execute(listingId: string): Promise<Appointment[]> {
+  async execute(listingId: string, query: PaginationQuery): Promise<PaginationResult<Appointment>> {
     const listing = await this.listingRepository.findOne({ where: { id: listingId } });
     if (!listing) {
       throw new NotFoundException('Listing not found');
     }
-    return this.appointmentRepository.find({
-      where: { listingId },
-      relations: ['user'],
-      order: { scheduledAt: 'ASC' },
+    const qb = this.appointmentRepository
+      .createQueryBuilder('a')
+      .leftJoinAndSelect('a.user', 'u')
+      .where('a.listingId = :listingId', { listingId });
+
+    return paginate<Appointment>(qb, query, {
+      defaultSort: [{ field: 'scheduledAt', order: SortOrder.ASC }],
     });
   }
 }

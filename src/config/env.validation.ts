@@ -13,4 +13,9 @@ export const envSchema = Joi.object({
   JWT_SECRET: Joi.string().required(),
   JWT_EXPIRES_IN: Joi.string().required(),
   UPLOADS_DIR: Joi.string().required(),
+  SMTP_HOST: Joi.string().optional(),
+  SMTP_PORT: Joi.number().optional(),
+  SMTP_USER: Joi.string().optional().allow(''),
+  SMTP_PASS: Joi.string().optional().allow(''),
+  SMTP_FROM: Joi.string().optional(),
 });

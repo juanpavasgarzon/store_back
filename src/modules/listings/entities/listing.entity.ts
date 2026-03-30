@@ -4,11 +4,14 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
   ManyToOne,
   JoinColumn,
   OneToMany,
 } from 'typeorm';
 import { Category } from '../../categories/entities/category.entity';
+import { User } from '../../users/entities/user.entity';
+import { LISTING_STATUS, type ListingStatus } from '../constants/listing-status.constants';
 import { ListingPhoto } from './listing-photo.entity';
 import { ListingVariantValue } from './listing-variant-value.entity';
 import { Comment } from './comment.entity';
@@ -24,6 +27,9 @@ export class Listing {
 
   @Column({ length: 30, unique: true })
   code: string;
+
+  @Column('uuid')
+  userId: string;
 
   @Column('uuid')
   categoryId: string;
@@ -49,6 +55,12 @@ export class Listing {
   @Column({ type: 'decimal', precision: 10, scale: 7, nullable: true })
   longitude: string | null;
 
+  @Column({ type: 'varchar', length: 20, default: LISTING_STATUS.ACTIVE })
+  status: ListingStatus;
+
+  @Column({ type: 'timestamp', nullable: true })
+  expiresAt: Date | null;
+
   @Column({ default: true })
   isActive: boolean;
 
@@ -58,9 +70,16 @@ export class Listing {
   @UpdateDateColumn()
   updatedAt: Date;
 
+  @DeleteDateColumn({ nullable: true })
+  deletedAt: Date | null;
+
   @ManyToOne(() => Category, (c) => c.listings, { onDelete: 'RESTRICT' })
   @JoinColumn({ name: 'categoryId' })
   category: Category;
+
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'userId' })
+  user: User;
 
   @OneToMany(() => ListingPhoto, (p) => p.listing, { cascade: true })
   photos: ListingPhoto[];

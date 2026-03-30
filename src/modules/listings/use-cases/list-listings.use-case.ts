@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Listing } from '../entities/listing.entity';
+import { LISTING_STATUS } from '../constants/listing-status.constants';
 import {
   paginate,
   SortOrder,
@@ -23,7 +24,9 @@ export class ListListingsUseCase {
       .leftJoinAndSelect('l.photos', 'p')
       .leftJoinAndSelect('l.variants', 'lv')
       .leftJoinAndSelect('lv.categoryVariant', 'cv')
-      .where('l.isActive = :isActive', { isActive: true });
+      .where('l.isActive = :isActive', { isActive: true })
+      .andWhere('l.status = :status', { status: LISTING_STATUS.ACTIVE })
+      .andWhere('(l.expiresAt IS NULL OR l.expiresAt > NOW())');
 
     return paginate<Listing>(qb, query, {
       searchFields: ['title', 'description', 'location', 'sector'],

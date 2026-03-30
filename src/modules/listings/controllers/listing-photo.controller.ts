@@ -10,6 +10,7 @@ import {
   StreamableFile,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import { Public, RequirePermissions } from '../../../shared';
 import { PERMISSIONS } from '../../../shared/security';
 import { UploadListingPhotosUseCase } from '../use-cases/upload-listing-photos.use-case';
@@ -28,7 +29,12 @@ export class ListingPhotoController {
   @RequirePermissions(PERMISSIONS.LISTINGS_UPDATE)
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @UseInterceptors(FilesInterceptor('photos', 10))
+  @UseInterceptors(
+    FilesInterceptor('photos', 10, {
+      storage: memoryStorage(),
+      limits: { fileSize: 10 * 1024 * 1024 },
+    }),
+  )
   async upload(
     @Param('listingId') listingId: string,
     @UploadedFiles() files: Express.Multer.File[],

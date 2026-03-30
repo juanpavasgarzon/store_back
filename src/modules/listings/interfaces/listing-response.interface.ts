@@ -2,6 +2,7 @@ export interface ListingPhotoResponse {
   id: string;
   filename: string;
   url: string;
+  thumbnailUrl: string | null;
 }
 
 export interface ListingVariantValueResponse {
@@ -20,6 +21,7 @@ export interface ListingCategoryResponse {
 export interface ListingResponseShape {
   id: string;
   code: string;
+  userId: string;
   categoryId: string;
   category?: ListingCategoryResponse;
   title: string;
@@ -29,6 +31,8 @@ export interface ListingResponseShape {
   sector: string | null;
   latitude: string | null;
   longitude: string | null;
+  status: string;
+  expiresAt: Date | null;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;

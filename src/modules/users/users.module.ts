@@ -9,6 +9,11 @@ import { FindUserByIdUseCase } from './use-cases/find-user-by-id.use-case';
 import { CreateUserUseCase } from './use-cases/create-user.use-case';
 import { GetProfileUseCase } from './use-cases/get-profile.use-case';
 import { ListUsersUseCase } from './use-cases/list-users.use-case';
+import { UpdateProfileUseCase } from './use-cases/update-profile.use-case';
+import { ChangePasswordUseCase } from './use-cases/change-password.use-case';
+import { SetUserActiveUseCase } from './use-cases/set-user-active.use-case';
+import { SetUserRoleUseCase } from './use-cases/set-user-role.use-case';
+import { DeleteUserUseCase } from './use-cases/delete-user.use-case';
 import { ListingsModule } from '../listings/listings.module';
 
 @Module({
@@ -21,6 +26,11 @@ import { ListingsModule } from '../listings/listings.module';
     CreateUserUseCase,
     GetProfileUseCase,
     ListUsersUseCase,
+    UpdateProfileUseCase,
+    ChangePasswordUseCase,
+    SetUserActiveUseCase,
+    SetUserRoleUseCase,
+    DeleteUserUseCase,
   ],
   exports: [UserService],
 })

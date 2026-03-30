@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Patch, Body, Query, HttpCode, HttpStatus } from '@nestjs/common';
 import { CurrentUser, RequirePermissions } from '../../../shared';
 import { PERMISSIONS } from '../../../shared/security';
 import type { IUser } from '../../../shared';
@@ -7,9 +7,20 @@ import { MeProfileResponseDto } from '../dto/response/me-profile-response.dto';
 import { FavoriteService } from '../../listings/services/favorite.service';
 import { ContactRequestService } from '../../listings/services/contact-request.service';
 import { AppointmentService } from '../../listings/services/appointment.service';
+import { ListMyListingsUseCase } from '../../listings/use-cases/list-my-listings.use-case';
+import { UpdateProfileUseCase } from '../use-cases/update-profile.use-case';
+import { ChangePasswordUseCase } from '../use-cases/change-password.use-case';
+import { UpdateProfileRequestDto } from '../dto/request/update-profile.dto';
+import { ChangePasswordRequestDto } from '../dto/request/change-password.dto';
 import { FavoriteResponseDto } from '../../listings/dto/response/favorite-response.dto';
 import { ContactRequestResponseDto } from '../../listings/dto/response/contact-request-response.dto';
 import { AppointmentResponseDto } from '../../listings/dto/response/appointment-response.dto';
+import { ListingResponseDto } from '../../listings/dto/response/listing-response.dto';
+import {
+  PaginationResponse,
+  ParsePaginationQueryPipe,
+  PaginationRequest,
+} from '../../../shared/pagination';
 
 @Controller('users/me')
 export class MeController {
@@ -18,6 +29,9 @@ export class MeController {
     private readonly favoriteService: FavoriteService,
     private readonly contactRequestService: ContactRequestService,
     private readonly appointmentService: AppointmentService,
+    private readonly listMyListingsUseCase: ListMyListingsUseCase,
+    private readonly updateProfileUseCase: UpdateProfileUseCase,
+    private readonly changePasswordUseCase: ChangePasswordUseCase,
   ) {}
 
   @RequirePermissions(PERMISSIONS.USERS_ME_READ)
@@ -31,24 +45,77 @@ export class MeController {
   @RequirePermissions(PERMISSIONS.USERS_ME_READ)
   @Get('favorites')
   @HttpCode(HttpStatus.OK)
-  async listMyFavorites(@CurrentUser() user: IUser): Promise<FavoriteResponseDto[]> {
-    const favorites = await this.favoriteService.listMyFavorites(user);
-    return favorites.map((f) => new FavoriteResponseDto(f));
+  async listMyFavorites(
+    @CurrentUser() user: IUser,
+    @Query(ParsePaginationQueryPipe) query: PaginationRequest,
+  ): Promise<PaginationResponse<FavoriteResponseDto>> {
+    const result = await this.favoriteService.listMyFavorites(user, query);
+    return new PaginationResponse(
+      result.data.map((f) => new FavoriteResponseDto(f)),
+      result.meta,
+    );
   }
 
   @RequirePermissions(PERMISSIONS.USERS_ME_READ)
   @Get('contact-requests')
   @HttpCode(HttpStatus.OK)
-  async listMyContactRequests(@CurrentUser() user: IUser): Promise<ContactRequestResponseDto[]> {
-    const list = await this.contactRequestService.listMyContactRequests(user);
-    return list.map((r) => new ContactRequestResponseDto(r));
+  async listMyContactRequests(
+    @CurrentUser() user: IUser,
+    @Query(ParsePaginationQueryPipe) query: PaginationRequest,
+  ): Promise<PaginationResponse<ContactRequestResponseDto>> {
+    const result = await this.contactRequestService.listMyContactRequests(user, query);
+    return new PaginationResponse(
+      result.data.map((r) => new ContactRequestResponseDto(r)),
+      result.meta,
+    );
   }
 
   @RequirePermissions(PERMISSIONS.USERS_ME_READ)
   @Get('appointments')
   @HttpCode(HttpStatus.OK)
-  async listMyAppointments(@CurrentUser() user: IUser): Promise<AppointmentResponseDto[]> {
-    const list = await this.appointmentService.listMyAppointments(user);
-    return list.map((a) => new AppointmentResponseDto(a));
+  async listMyAppointments(
+    @CurrentUser() user: IUser,
+    @Query(ParsePaginationQueryPipe) query: PaginationRequest,
+  ): Promise<PaginationResponse<AppointmentResponseDto>> {
+    const result = await this.appointmentService.listMyAppointments(user, query);
+    return new PaginationResponse(
+      result.data.map((a) => new AppointmentResponseDto(a)),
+      result.meta,
+    );
+  }
+
+  @RequirePermissions(PERMISSIONS.USERS_ME_READ)
+  @Patch('profile')
+  @HttpCode(HttpStatus.OK)
+  async updateProfile(
+    @CurrentUser() user: IUser,
+    @Body() dto: UpdateProfileRequestDto,
+  ): Promise<MeProfileResponseDto> {
+    const updated = await this.updateProfileUseCase.execute(user, dto);
+    return new MeProfileResponseDto(updated);
+  }
+
+  @RequirePermissions(PERMISSIONS.USERS_ME_READ)
+  @Patch('password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async changePassword(
+    @CurrentUser() user: IUser,
+    @Body() dto: ChangePasswordRequestDto,
+  ): Promise<void> {
+    await this.changePasswordUseCase.execute(user, dto);
+  }
+
+  @RequirePermissions(PERMISSIONS.USERS_ME_READ)
+  @Get('listings')
+  @HttpCode(HttpStatus.OK)
+  async listMyListings(
+    @CurrentUser() user: IUser,
+    @Query(ParsePaginationQueryPipe) query: PaginationRequest,
+  ): Promise<PaginationResponse<ListingResponseDto>> {
+    const result = await this.listMyListingsUseCase.execute(user, query);
+    return new PaginationResponse(
+      result.data.map((l) => new ListingResponseDto(l)),
+      result.meta,
+    );
   }
 }

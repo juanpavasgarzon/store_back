@@ -6,10 +6,11 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { CurrentUser, Public, RequirePermissions } from '../../../shared';
+import { CurrentUser, RequirePermissions } from '../../../shared';
 import { PERMISSIONS } from '../../../shared/security';
 import type { IUser } from '../../../shared';
 import { CreateAppointmentUseCase } from '../use-cases/create-appointment.use-case';
@@ -19,6 +20,11 @@ import { ListListingAppointmentsUseCase } from '../use-cases/list-listing-appoin
 import { CreateAppointmentRequestDto } from '../dto/request/create-appointment.dto';
 import { UpdateAppointmentRequestDto } from '../dto/request/update-appointment.dto';
 import { AppointmentResponseDto } from '../dto/response/appointment-response.dto';
+import {
+  PaginationResponse,
+  ParsePaginationQueryPipe,
+  PaginationRequest,
+} from '../../../shared/pagination';
 
 @Controller('listings/:listingId/calendar')
 export class AppointmentController {
@@ -29,12 +35,18 @@ export class AppointmentController {
     private readonly listListingAppointmentsUseCase: ListListingAppointmentsUseCase,
   ) {}
 
-  @Public()
+  @RequirePermissions(PERMISSIONS.CALENDAR_READ)
   @Get()
   @HttpCode(HttpStatus.OK)
-  async listByListing(@Param('listingId') listingId: string): Promise<AppointmentResponseDto[]> {
-    const list = await this.listListingAppointmentsUseCase.execute(listingId);
-    return list.map((a) => new AppointmentResponseDto(a));
+  async listByListing(
+    @Param('listingId') listingId: string,
+    @Query(ParsePaginationQueryPipe) query: PaginationRequest,
+  ): Promise<PaginationResponse<AppointmentResponseDto>> {
+    const result = await this.listListingAppointmentsUseCase.execute(listingId, query);
+    return new PaginationResponse(
+      result.data.map((a) => new AppointmentResponseDto(a)),
+      result.meta,
+    );
   }
 
   @RequirePermissions(PERMISSIONS.CALENDAR_CREATE)

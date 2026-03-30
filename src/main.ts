@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
 import compression from 'compression';
@@ -32,7 +32,7 @@ async function bootstrap() {
   const validationPipeOptions = new ValidationPipe({
     transform: true,
     whitelist: true,
-    forbidNonWhitelisted: false,
+    forbidNonWhitelisted: true,
     transformOptions: {
       enableImplicitConversion: true,
     },
@@ -44,6 +44,7 @@ async function bootstrap() {
 
   const apiPrefix = config.get<string>('app.apiPrefix', 'api');
   app.setGlobalPrefix(apiPrefix);
+  app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
 
   const port = config.get<number>('app.port', 3001);
   await app.listen(port, '0.0.0.0');

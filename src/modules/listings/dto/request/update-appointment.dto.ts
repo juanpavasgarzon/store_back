@@ -1,4 +1,6 @@
-import { IsOptional, IsDateString, IsString, MaxLength } from 'class-validator';
+import { IsOptional, IsDateString, IsIn, IsString, MaxLength } from 'class-validator';
+import { APPOINTMENT_STATUS } from '../../constants/appointment-status.constants';
+import type { AppointmentStatus } from '../../constants/appointment-status.constants';
 
 export class UpdateAppointmentRequestDto {
   @IsOptional()
@@ -6,9 +8,8 @@ export class UpdateAppointmentRequestDto {
   scheduledAt?: string;
 
   @IsOptional()
-  @IsString()
-  @MaxLength(20)
-  status?: string;
+  @IsIn(Object.values(APPOINTMENT_STATUS))
+  status?: AppointmentStatus;
 
   @IsOptional()
   @IsString()

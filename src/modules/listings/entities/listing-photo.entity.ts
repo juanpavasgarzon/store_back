@@ -20,8 +20,14 @@ export class ListingPhoto {
   @Column({ length: 255 })
   filename: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  originalFilename: string | null;
+
   @Column({ length: 512 })
   url: string;
+
+  @Column({ type: 'varchar', length: 512, nullable: true })
+  thumbnailUrl: string | null;
 
   @CreateDateColumn()
   createdAt: Date;

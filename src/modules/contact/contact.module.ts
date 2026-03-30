@@ -18,6 +18,6 @@ import { GetContactConfigUseCase } from './use-cases/get-contact-config.use-case
     UpdateContactConfigUseCase,
     GetContactConfigUseCase,
   ],
-  exports: [ContactConfigService],
+  exports: [ContactConfigService, FindContactConfigUseCase],
 })
 export class ContactModule {}

@@ -41,9 +41,14 @@ export class CategoryController {
   @Public()
   @Get('public')
   @HttpCode(HttpStatus.OK)
-  async listPublic(): Promise<CategoryResponse[]> {
-    const list = await this.listPublicCategoriesUseCase.execute();
-    return list.map((c) => new CategoryResponse(c));
+  async listPublic(
+    @Query(ParsePaginationQueryPipe) query: PaginationRequest,
+  ): Promise<PaginationResponse<CategoryResponse>> {
+    const result = await this.listPublicCategoriesUseCase.execute(query);
+    return new PaginationResponse(
+      result.data.map((c) => new CategoryResponse(c)),
+      result.meta,
+    );
   }
 
   @RequirePermissions(PERMISSIONS.CATEGORIES_READ)

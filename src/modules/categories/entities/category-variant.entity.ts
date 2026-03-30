@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Category } from './category.entity';
 import { ListingVariantValue } from '../../listings/entities/listing-variant-value.entity';
+import type { VariantValueType } from '../constants/variant-value-type.constants';
 
 @Entity('category_variants')
 export class CategoryVariant {
@@ -26,7 +27,7 @@ export class CategoryVariant {
   key: string;
 
   @Column({ type: 'varchar', length: 20, default: 'text' })
-  valueType: string;
+  valueType: VariantValueType;
 
   @CreateDateColumn()
   createdAt: Date;

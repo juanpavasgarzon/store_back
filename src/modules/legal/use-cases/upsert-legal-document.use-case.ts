@@ -1,10 +1,8 @@
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { LegalDocument } from '../entities/legal-document.entity';
-import type { IUser } from '../../../shared';
 import type { UpsertLegalDocumentRequestDto } from '../dto/request/upsert-legal-document.dto';
-import { ROLES } from '../../../shared/security';
 
 @Injectable()
 export class UpsertLegalDocumentUseCase {
@@ -13,11 +11,7 @@ export class UpsertLegalDocumentUseCase {
     private readonly legalDocumentRepository: Repository<LegalDocument>,
   ) {}
 
-  async execute(user: IUser, dto: UpsertLegalDocumentRequestDto): Promise<LegalDocument> {
-    if (user.role !== ROLES.OWNER) {
-      throw new ForbiddenException();
-    }
-
+  async execute(dto: UpsertLegalDocumentRequestDto): Promise<LegalDocument> {
     const existing = await this.legalDocumentRepository.findOne({
       where: { slug: dto.slug },
     });

@@ -7,6 +7,7 @@ export class UserResponseDto {
   role: string;
   isActive: boolean;
   createdAt: Date;
+  updatedAt: Date;
 
   constructor(user: User) {
     this.id = user.id;
@@ -15,5 +16,6 @@ export class UserResponseDto {
     this.role = user.role;
     this.isActive = user.isActive ?? true;
     this.createdAt = user.createdAt;
+    this.updatedAt = user.updatedAt;
   }
 }

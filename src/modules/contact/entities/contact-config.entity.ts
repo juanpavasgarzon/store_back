@@ -4,12 +4,17 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  Unique,
 } from 'typeorm';
 
 @Entity('contact_config')
+@Unique(['singleton'])
 export class ContactConfig {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column({ type: 'boolean', default: true })
+  singleton: boolean;
 
   @Column({ length: 255 })
   recipientEmail: string;

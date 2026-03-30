@@ -1,4 +1,6 @@
-import { IsString, IsOptional, MaxLength } from 'class-validator';
+import { IsString, IsOptional, IsIn, MaxLength } from 'class-validator';
+import { VARIANT_VALUE_TYPE } from '../../constants/variant-value-type.constants';
+import type { VariantValueType } from '../../constants/variant-value-type.constants';
 
 export class CreateCategoryVariantRequestDto {
   @IsString()
@@ -10,7 +12,6 @@ export class CreateCategoryVariantRequestDto {
   key: string;
 
   @IsOptional()
-  @IsString()
-  @MaxLength(20)
-  valueType?: string;
+  @IsIn(Object.values(VARIANT_VALUE_TYPE))
+  valueType?: VariantValueType;
 }

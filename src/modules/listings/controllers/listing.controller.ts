@@ -10,12 +10,14 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { Public, RequirePermissions } from '../../../shared';
+import { CurrentUser, Public, RequirePermissions } from '../../../shared';
 import { PERMISSIONS } from '../../../shared/security';
+import type { IUser } from '../../../shared';
 import { CreateListingUseCase } from '../use-cases/create-listing.use-case';
 import { UpdateListingUseCase } from '../use-cases/update-listing.use-case';
 import { DeleteListingUseCase } from '../use-cases/delete-listing.use-case';
 import { ListListingsUseCase } from '../use-cases/list-listings.use-case';
+import { ListNearbyListingsUseCase } from '../use-cases/list-nearby-listings.use-case';
 import { GetListingUseCase } from '../use-cases/get-listing.use-case';
 import { GetListingByCodeUseCase } from '../use-cases/get-listing-by-code.use-case';
 import { CreateListingRequestDto } from '../dto/request/create-listing.dto';
@@ -34,6 +36,7 @@ export class ListingController {
     private readonly updateListingUseCase: UpdateListingUseCase,
     private readonly deleteListingUseCase: DeleteListingUseCase,
     private readonly listListingsUseCase: ListListingsUseCase,
+    private readonly listNearbyListingsUseCase: ListNearbyListingsUseCase,
     private readonly getListingUseCase: GetListingUseCase,
     private readonly getListingByCodeUseCase: GetListingByCodeUseCase,
   ) {}
@@ -45,6 +48,27 @@ export class ListingController {
     @Query(ParsePaginationQueryPipe) query: PaginationRequest,
   ): Promise<PaginationResponse<ListingResponseDto>> {
     const result = await this.listListingsUseCase.execute(query);
+    return new PaginationResponse(
+      result.data.map((listing) => new ListingResponseDto(listing)),
+      result.meta,
+    );
+  }
+
+  @Public()
+  @Get('nearby')
+  @HttpCode(HttpStatus.OK)
+  async listNearby(
+    @Query('lat') lat: string,
+    @Query('lng') lng: string,
+    @Query('radius') radius: string,
+    @Query(ParsePaginationQueryPipe) query: PaginationRequest,
+  ): Promise<PaginationResponse<ListingResponseDto>> {
+    const result = await this.listNearbyListingsUseCase.execute(
+      parseFloat(lat),
+      parseFloat(lng),
+      radius != null ? parseFloat(radius) : undefined,
+      query,
+    );
     return new PaginationResponse(
       result.data.map((listing) => new ListingResponseDto(listing)),
       result.meta,
@@ -70,8 +94,11 @@ export class ListingController {
   @RequirePermissions(PERMISSIONS.LISTINGS_CREATE)
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() request: CreateListingRequestDto): Promise<ListingResponseDto> {
-    const listing = await this.createListingUseCase.execute(request);
+  async create(
+    @CurrentUser() user: IUser,
+    @Body() request: CreateListingRequestDto,
+  ): Promise<ListingResponseDto> {
+    const listing = await this.createListingUseCase.execute(user, request);
     return new ListingResponseDto(listing);
   }
 
@@ -79,17 +106,18 @@ export class ListingController {
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   async update(
+    @CurrentUser() user: IUser,
     @Param('id') id: string,
     @Body() request: UpdateListingRequestDto,
   ): Promise<ListingResponseDto> {
-    const listing = await this.updateListingUseCase.execute(id, request);
+    const listing = await this.updateListingUseCase.execute(id, user, request);
     return new ListingResponseDto(listing);
   }
 
   @RequirePermissions(PERMISSIONS.LISTINGS_DELETE)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async delete(@Param('id') id: string): Promise<void> {
-    await this.deleteListingUseCase.execute(id);
+  async delete(@CurrentUser() user: IUser, @Param('id') id: string): Promise<void> {
+    await this.deleteListingUseCase.execute(id, user);
   }
 }

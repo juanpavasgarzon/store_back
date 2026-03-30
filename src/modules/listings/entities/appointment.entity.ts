@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Listing } from './listing.entity';
+import type { AppointmentStatus } from '../constants/appointment-status.constants';
 
 @Entity('appointments')
 export class Appointment {
@@ -25,7 +26,7 @@ export class Appointment {
   scheduledAt: Date;
 
   @Column({ length: 20, default: 'pending' })
-  status: string;
+  status: AppointmentStatus;
 
   @Column({ type: 'text', nullable: true })
   notes: string | null;

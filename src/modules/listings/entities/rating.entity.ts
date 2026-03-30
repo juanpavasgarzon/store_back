@@ -6,11 +6,13 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  Unique,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Listing } from './listing.entity';
 
 @Entity('ratings')
+@Unique(['userId', 'listingId'])
 export class Rating {
   @PrimaryGeneratedColumn('uuid')
   id: string;
