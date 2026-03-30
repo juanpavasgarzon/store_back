@@ -12,30 +12,30 @@ import { Listing } from './listing.entity';
 @Entity('listing_photos')
 export class ListingPhoto {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column('uuid')
-  listingId: string;
+  listingId!: string;
 
   @Column({ length: 255 })
-  filename: string;
+  filename!: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  originalFilename: string | null;
+  originalFilename!: string | null;
 
   @Column({ length: 512 })
-  url: string;
+  url!: string;
 
   @Column({ type: 'varchar', length: 512, nullable: true })
-  thumbnailUrl: string | null;
+  thumbnailUrl!: string | null;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @ManyToOne(() => Listing, (l) => l.photos, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'listingId' })
-  listing: Listing;
+  listing!: Listing;
 }

@@ -14,34 +14,34 @@ import type { AppointmentStatus } from '../constants/appointment-status.constant
 @Entity('appointments')
 export class Appointment {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column('uuid')
-  userId: string;
+  userId!: string;
 
   @Column('uuid')
-  listingId: string;
+  listingId!: string;
 
   @Column({ type: 'timestamp' })
-  scheduledAt: Date;
+  scheduledAt!: Date;
 
   @Column({ length: 20, default: 'pending' })
-  status: AppointmentStatus;
+  status!: AppointmentStatus;
 
   @Column({ type: 'text', nullable: true })
-  notes: string | null;
+  notes!: string | null;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
-  user: User;
+  user!: User;
 
   @ManyToOne(() => Listing, (l) => l.appointments, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'listingId' })
-  listing: Listing;
+  listing!: Listing;
 }

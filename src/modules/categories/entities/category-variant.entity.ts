@@ -15,30 +15,30 @@ import type { VariantValueType } from '../constants/variant-value-type.constants
 @Entity('category_variants')
 export class CategoryVariant {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column('uuid')
-  categoryId: string;
+  categoryId!: string;
 
   @Column({ length: 80 })
-  name: string;
+  name!: string;
 
   @Column({ length: 50 })
-  key: string;
+  key!: string;
 
   @Column({ type: 'varchar', length: 20, default: 'text' })
-  valueType: VariantValueType;
+  valueType!: VariantValueType;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @ManyToOne(() => Category, (c) => c.variants, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'categoryId' })
-  category: Category;
+  category!: Category;
 
   @OneToMany(() => ListingVariantValue, (lv) => lv.categoryVariant)
-  listingVariantValues: ListingVariantValue[];
+  listingVariantValues!: ListingVariantValue[];
 }

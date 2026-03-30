@@ -15,28 +15,28 @@ import { Listing } from './listing.entity';
 @Unique(['userId', 'listingId'])
 export class Rating {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column('uuid')
-  userId: string;
+  userId!: string;
 
   @Column('uuid')
-  listingId: string;
+  listingId!: string;
 
   @Column({ type: 'smallint' })
-  score: number;
+  score!: number;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
-  user: User;
+  user!: User;
 
   @ManyToOne(() => Listing, (l) => l.ratings, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'listingId' })
-  listing: Listing;
+  listing!: Listing;
 }

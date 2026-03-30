@@ -12,29 +12,29 @@ import { Listing } from '../../listings/entities/listing.entity';
 @Entity('categories')
 export class Category {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ length: 100 })
-  name: string;
+  name!: string;
 
   @Column({ length: 50, unique: true })
-  slug: string;
+  slug!: string;
 
   @Column({ type: 'text', nullable: true })
-  description: string | null;
+  description!: string | null;
 
   @Column({ default: true })
-  isActive: boolean;
+  isActive!: boolean;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @OneToMany(() => CategoryVariant, (v) => v.category)
-  variants: CategoryVariant[];
+  variants!: CategoryVariant[];
 
   @OneToMany(() => Listing, (l) => l.category)
-  listings: Listing[];
+  listings!: Listing[];
 }

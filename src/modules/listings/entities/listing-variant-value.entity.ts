@@ -13,28 +13,28 @@ import { CategoryVariant } from '../../categories/entities/category-variant.enti
 @Entity('listing_variant_values')
 export class ListingVariantValue {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column('uuid')
-  listingId: string;
+  listingId!: string;
 
   @Column('uuid')
-  categoryVariantId: string;
+  categoryVariantId!: string;
 
   @Column({ type: 'text' })
-  value: string;
+  value!: string;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @ManyToOne(() => Listing, (l) => l.variants, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'listingId' })
-  listing: Listing;
+  listing!: Listing;
 
   @ManyToOne(() => CategoryVariant, (cv) => cv.listingVariantValues, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'categoryVariantId' })
-  categoryVariant: CategoryVariant;
+  categoryVariant!: CategoryVariant;
 }

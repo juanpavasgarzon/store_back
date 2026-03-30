@@ -12,29 +12,29 @@ import { ROLES } from '../../../shared/security';
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ unique: true })
-  email: string;
+  email!: string;
 
   @Column()
-  passwordHash: string;
+  passwordHash!: string;
 
   @Column({ length: 120 })
-  name: string;
+  name!: string;
 
   @Column({ type: 'varchar', length: 20, default: ROLES.USER })
-  role: Role;
+  role!: Role;
 
   @Column({ default: true })
-  isActive: boolean;
+  isActive!: boolean;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @DeleteDateColumn({ nullable: true })
-  deletedAt: Date | null;
+  deletedAt!: Date | null;
 }

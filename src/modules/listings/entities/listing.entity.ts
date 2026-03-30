@@ -23,82 +23,82 @@ import { Appointment } from './appointment.entity';
 @Entity('listings')
 export class Listing {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ length: 30, unique: true })
-  code: string;
+  code!: string;
 
   @Column('uuid')
-  userId: string;
+  userId!: string;
 
   @Column('uuid')
-  categoryId: string;
+  categoryId!: string;
 
   @Column({ length: 255 })
-  title: string;
+  title!: string;
 
   @Column({ type: 'text' })
-  description: string;
+  description!: string;
 
   @Column({ type: 'decimal', precision: 14, scale: 2 })
-  price: string;
+  price!: string;
 
   @Column({ length: 120 })
-  location: string;
+  location!: string;
 
   @Column({ type: 'varchar', length: 80, nullable: true })
-  sector: string | null;
+  sector!: string | null;
 
   @Column({ type: 'decimal', precision: 10, scale: 7, nullable: true })
-  latitude: string | null;
+  latitude!: string | null;
 
   @Column({ type: 'decimal', precision: 10, scale: 7, nullable: true })
-  longitude: string | null;
+  longitude!: string | null;
 
   @Column({ type: 'varchar', length: 20, default: LISTING_STATUS.ACTIVE })
-  status: ListingStatus;
+  status!: ListingStatus;
 
   @Column({ type: 'timestamp', nullable: true })
-  expiresAt: Date | null;
+  expiresAt!: Date | null;
 
   @Column({ default: true })
-  isActive: boolean;
+  isActive!: boolean;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @DeleteDateColumn({ nullable: true })
-  deletedAt: Date | null;
+  deletedAt!: Date | null;
 
   @ManyToOne(() => Category, (c) => c.listings, { onDelete: 'RESTRICT' })
   @JoinColumn({ name: 'categoryId' })
-  category: Category;
+  category!: Category;
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
-  user: User;
+  user!: User;
 
   @OneToMany(() => ListingPhoto, (p) => p.listing, { cascade: true })
-  photos: ListingPhoto[];
+  photos!: ListingPhoto[];
 
   @OneToMany(() => ListingVariantValue, (v) => v.listing, { cascade: true })
-  variants: ListingVariantValue[];
+  variants!: ListingVariantValue[];
 
   @OneToMany(() => Comment, (c) => c.listing)
-  comments: Comment[];
+  comments!: Comment[];
 
   @OneToMany(() => Rating, (r) => r.listing)
-  ratings: Rating[];
+  ratings!: Rating[];
 
   @OneToMany(() => Favorite, (f) => f.listing)
-  favorites: Favorite[];
+  favorites!: Favorite[];
 
   @OneToMany(() => ContactRequest, (cr) => cr.listing)
-  contactRequests: ContactRequest[];
+  contactRequests!: ContactRequest[];
 
   @OneToMany(() => Appointment, (a) => a.listing)
-  appointments: Appointment[];
+  appointments!: Appointment[];
 }

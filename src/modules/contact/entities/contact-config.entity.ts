@@ -11,23 +11,23 @@ import {
 @Unique(['singleton'])
 export class ContactConfig {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ type: 'boolean', default: true })
-  singleton: boolean;
+  singleton!: boolean;
 
   @Column({ length: 255 })
-  recipientEmail: string;
+  recipientEmail!: string;
 
   @Column({ type: 'varchar', length: 500, nullable: true })
-  subjectTemplate: string | null;
+  subjectTemplate!: string | null;
 
   @Column({ type: 'text', nullable: true })
-  messageTemplate: string | null;
+  messageTemplate!: string | null;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }
