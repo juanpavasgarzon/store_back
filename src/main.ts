@@ -1,12 +1,12 @@
-import { NestFactory } from '@nestjs/core';
-import { ValidationPipe, VersioningType, Logger } from '@nestjs/common';
+import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import helmet from 'helmet';
+import { NestFactory } from '@nestjs/core';
 import compression from 'compression';
 import type { HelmetOptions } from 'helmet';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter, httpRequestLogger, requestIdMiddleware } from './shared';
+import { swaggerSetUp } from './swagger-setup';
 
 const logger = new Logger('Bootstrap');
 
@@ -50,20 +50,7 @@ async function bootstrap() {
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
 
   if (!isProduction) {
-    const swaggerConfig = new DocumentBuilder()
-      .setTitle('Store API')
-      .setDescription('API for Pavas Store — real estate, vehicles and lots listings platform')
-      .setVersion('1.0')
-      .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'JWT')
-      .build();
-
-    const document = SwaggerModule.createDocument(app, swaggerConfig);
-
-    SwaggerModule.setup(`${apiPrefix}/docs`, app, document, {
-      swaggerOptions: { persistAuthorization: true },
-    });
-
-    logger.log(`Swagger docs available at /${apiPrefix}/docs`);
+    swaggerSetUp(app);
   }
 
   const port = config.get<number>('app.port', 3001);
