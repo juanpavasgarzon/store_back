@@ -1,8 +1,11 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Appointment } from '../entities/appointment.entity';
+import { Listing } from '../entities/listing.entity';
 import { MailerService } from '../../mailer/mailer.service';
+import { LISTING_DOMAIN_EVENTS, type AppointmentStatusChangedEvent } from '../events';
 import type { IUser } from '../../../shared';
 import { ROLES } from '../../../shared/security';
 import type { UpdateAppointmentRequestDto } from '../dto/request/update-appointment.dto';
@@ -12,7 +15,10 @@ export class UpdateAppointmentUseCase {
   constructor(
     @InjectRepository(Appointment)
     private readonly appointmentRepository: Repository<Appointment>,
+    @InjectRepository(Listing)
+    private readonly listingRepository: Repository<Listing>,
     private readonly mailerService: MailerService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async execute(id: string, user: IUser, dto: UpdateAppointmentRequestDto): Promise<Appointment> {
@@ -23,10 +29,8 @@ export class UpdateAppointmentUseCase {
     if (!appointment) {
       throw new NotFoundException('Appointment not found');
     }
-    const isPrivileged = user.role === ROLES.ADMIN || user.role === ROLES.OWNER;
-    if (!isPrivileged && appointment.userId !== user.id) {
-      throw new NotFoundException('Appointment not found');
-    }
+
+    await this.assertCanUpdate(appointment, user);
 
     const previousStatus = appointment.status;
 
@@ -47,9 +51,32 @@ export class UpdateAppointmentUseCase {
 
     if (dto.status != null && dto.status !== previousStatus) {
       await this.sendStatusChangeEmail(updated);
+      const event: AppointmentStatusChangedEvent = {
+        appointmentId: updated.id,
+        listingId: updated.listingId,
+        listingTitle: updated.listing?.title ?? null,
+        userId: updated.userId,
+        newStatus: updated.status,
+      };
+      this.eventEmitter.emit(LISTING_DOMAIN_EVENTS.APPOINTMENT_STATUS_CHANGED, event);
     }
 
     return updated;
+  }
+
+  private async assertCanUpdate(appointment: Appointment, user: IUser): Promise<void> {
+    const isPrivileged = user.role === ROLES.ADMIN || user.role === ROLES.OWNER;
+    if (isPrivileged) {
+      return;
+    }
+    if (appointment.userId === user.id) {
+      return;
+    }
+    const listing = await this.listingRepository.findOne({ where: { id: appointment.listingId } });
+    if (listing?.userId === user.id) {
+      return;
+    }
+    throw new NotFoundException('Appointment not found');
   }
 
   private async sendStatusChangeEmail(appointment: Appointment): Promise<void> {

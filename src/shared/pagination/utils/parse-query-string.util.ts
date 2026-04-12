@@ -149,11 +149,11 @@ export function parseQueryString(rawQuery: RawQuery): PaginationQuery {
         }
         if (prop === 'field') {
           parsed.sort[index].field = typeof value === 'string' ? value : '';
-        } else {
-          parsed.sort[index].order = (
-            typeof value === 'string' ? value.toUpperCase() : 'ASC'
-          ) as SortRule['order'];
+          continue;
         }
+        parsed.sort[index].order = (
+          typeof value === 'string' ? value.toUpperCase() : 'ASC'
+        ) as SortRule['order'];
       }
       continue;
     }

@@ -20,6 +20,7 @@ import { CreateCategoryVariantUseCase } from './use-cases/create-category-varian
 import { UpdateCategoryVariantUseCase } from './use-cases/update-category-variant.use-case';
 import { DeleteCategoryVariantUseCase } from './use-cases/delete-category-variant.use-case';
 import { ListVariantsByCategoryUseCase } from './use-cases/list-variants-by-category.use-case';
+import { FindCategoryVariantsByIdsUseCase } from './use-cases/find-category-variants-by-ids.use-case';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Category, CategoryVariant])],
@@ -41,7 +42,8 @@ import { ListVariantsByCategoryUseCase } from './use-cases/list-variants-by-cate
     UpdateCategoryVariantUseCase,
     DeleteCategoryVariantUseCase,
     ListVariantsByCategoryUseCase,
+    FindCategoryVariantsByIdsUseCase,
   ],
-  exports: [CategoryService, FindCategoryVariantByIdUseCase],
+  exports: [CategoryService, FindCategoryVariantByIdUseCase, FindCategoryVariantsByIdsUseCase],
 })
 export class CategoriesModule {}

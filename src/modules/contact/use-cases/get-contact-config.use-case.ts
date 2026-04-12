@@ -1,16 +1,12 @@
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { FindContactConfigUseCase } from './find-contact-config.use-case';
-import type { IUser } from '../../../shared';
-import { ROLES } from '../../../shared/security';
+import type { ContactConfig } from '../entities/contact-config.entity';
 
 @Injectable()
 export class GetContactConfigUseCase {
   constructor(private readonly findContactConfigUseCase: FindContactConfigUseCase) {}
 
-  async execute(user: IUser) {
-    if (user.role !== ROLES.OWNER) {
-      throw new ForbiddenException();
-    }
+  async execute(): Promise<ContactConfig | null> {
     return this.findContactConfigUseCase.execute();
   }
 }

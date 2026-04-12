@@ -9,6 +9,7 @@ import {
   Min,
   Max,
   MaxLength,
+  MinLength,
   IsUUID,
 } from 'class-validator';
 import { LISTING_STATUS, type ListingStatus } from '../../constants/listing-status.constants';
@@ -31,6 +32,8 @@ export class CreateListingRequestDto {
   title: string;
 
   @IsString()
+  @MinLength(10)
+  @MaxLength(5000)
   description: string;
 
   @IsNumber()

@@ -1,8 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Comment } from '../entities/comment.entity';
 import { Listing } from '../entities/listing.entity';
+import { LISTING_DOMAIN_EVENTS, type CommentCreatedEvent } from '../events';
 import type { IUser } from '../../../shared';
 import type { CreateCommentRequestDto } from '../dto/request/create-comment.dto';
 
@@ -13,6 +15,7 @@ export class CreateCommentUseCase {
     private readonly commentRepository: Repository<Comment>,
     @InjectRepository(Listing)
     private readonly listingRepository: Repository<Listing>,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async execute(listingId: string, user: IUser, dto: CreateCommentRequestDto): Promise<Comment> {
@@ -26,6 +29,19 @@ export class CreateCommentUseCase {
       listingId,
       content: dto.content,
     });
-    return this.commentRepository.save(comment);
+    const saved = await this.commentRepository.save(comment);
+
+    if (listing.userId !== user.id) {
+      const event: CommentCreatedEvent = {
+        listingId: listing.id,
+        listingTitle: listing.title,
+        listingOwnerId: listing.userId,
+        fromUserId: user.id,
+        fromUserName: user.name,
+      };
+      this.eventEmitter.emit(LISTING_DOMAIN_EVENTS.COMMENT_CREATED, event);
+    }
+
+    return saved;
   }
 }

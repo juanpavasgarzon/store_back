@@ -1,0 +1,1 @@
+export const REPORT_AUTO_SUSPEND_THRESHOLD = 5;

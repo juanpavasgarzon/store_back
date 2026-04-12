@@ -22,6 +22,7 @@ export class ListCategoriesUseCase {
     return paginate<Category>(qb, query, {
       searchFields: ['name', 'slug', 'description'],
       defaultSort: [{ field: 'name', order: SortOrder.ASC }],
+      maxFilterDepth: 2,
     });
   }
 }

@@ -1,15 +1,19 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ContactRequest } from '../entities/contact-request.entity';
 import { Listing } from '../entities/listing.entity';
 import { FindContactConfigUseCase } from '../../contact/use-cases/find-contact-config.use-case';
 import { MailerService } from '../../mailer/mailer.service';
+import { LISTING_DOMAIN_EVENTS, type ContactRequestCreatedEvent } from '../events';
 import type { IUser } from '../../../shared';
 import type { CreateContactRequestDto } from '../dto/request/create-contact-request.dto';
 
 @Injectable()
 export class CreateContactRequestUseCase {
+  private readonly logger = new Logger(CreateContactRequestUseCase.name);
+
   constructor(
     @InjectRepository(ContactRequest)
     private readonly contactRequestRepository: Repository<ContactRequest>,
@@ -17,6 +21,7 @@ export class CreateContactRequestUseCase {
     private readonly listingRepository: Repository<Listing>,
     private readonly findContactConfigUseCase: FindContactConfigUseCase,
     private readonly mailerService: MailerService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async execute(
@@ -38,7 +43,18 @@ export class CreateContactRequestUseCase {
     });
     const saved = await this.contactRequestRepository.save(contactRequest);
 
-    await this.sendNotificationEmail(user, listing, dto.message ?? null);
+    const event: ContactRequestCreatedEvent = {
+      listingId: listing.id,
+      listingTitle: listing.title,
+      listingOwnerId: listing.userId,
+      fromUserId: user.id,
+      fromUserName: user.name,
+    };
+    this.eventEmitter.emit(LISTING_DOMAIN_EVENTS.CONTACT_REQUEST_CREATED, event);
+
+    this.sendNotificationEmail(user, listing, dto.message ?? null).catch((error: unknown) => {
+      this.logger.error('Failed to send contact request notification email', error);
+    });
 
     return saved;
   }

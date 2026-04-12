@@ -46,15 +46,18 @@ export class ListNearbyListingsUseCase {
       .andWhere('l.longitude IS NOT NULL')
       .andWhere(
         `(${EARTH_RADIUS_KM} * acos(
-          cos(radians(:lat)) * cos(radians(CAST(l.latitude AS DOUBLE PRECISION)))
-          * cos(radians(CAST(l.longitude AS DOUBLE PRECISION)) - radians(:lng))
-          + sin(radians(:lat)) * sin(radians(CAST(l.latitude AS DOUBLE PRECISION)))
+          LEAST(1.0, GREATEST(-1.0,
+            cos(radians(:lat)) * cos(radians(CAST(l.latitude AS DOUBLE PRECISION)))
+            * cos(radians(CAST(l.longitude AS DOUBLE PRECISION)) - radians(:lng))
+            + sin(radians(:lat)) * sin(radians(CAST(l.latitude AS DOUBLE PRECISION)))
+          ))
         )) <= :radiusKm`,
         { lat, lng, radiusKm },
       );
 
     return paginate<Listing>(qb, query, {
       defaultSort: [{ field: 'createdAt', order: SortOrder.DESC }],
+      maxFilterDepth: 2,
     });
   }
 }

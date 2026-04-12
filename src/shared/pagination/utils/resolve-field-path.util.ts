@@ -45,11 +45,9 @@ export function resolveFieldPath<T extends ObjectLiteral>(
 
     if (!existingJoin && config.autoJoin !== false) {
       const joinPath = `${currentAlias}.${relationName}`;
-      if (config.joinType === 'inner') {
-        qb.innerJoin(joinPath, joinAlias);
-      } else {
-        qb.leftJoin(joinPath, joinAlias);
-      }
+      const joinMethod =
+        config.joinType === 'inner' ? ('innerJoin' as const) : ('leftJoin' as const);
+      qb[joinMethod](joinPath, joinAlias);
     }
 
     currentAlias = joinAlias;

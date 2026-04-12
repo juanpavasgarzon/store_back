@@ -1,8 +1,7 @@
 import { Controller, Get, Put, Body, Res, HttpCode, HttpStatus } from '@nestjs/common';
 import type { Response } from 'express';
-import { CurrentUser, RequirePermissions } from '../../../shared';
+import { RequirePermissions } from '../../../shared';
 import { PERMISSIONS } from '../../../shared/security';
-import type { IUser } from '../../../shared';
 import { UpdateContactConfigUseCase } from '../use-cases/update-contact-config.use-case';
 import { GetContactConfigUseCase } from '../use-cases/get-contact-config.use-case';
 import { UpdateContactConfigRequestDto } from '../dto/request/contact-config.dto';
@@ -19,10 +18,9 @@ export class ContactController {
   @Get('config')
   @HttpCode(HttpStatus.OK)
   async getConfig(
-    @CurrentUser() user: IUser,
     @Res({ passthrough: true }) res: Response,
   ): Promise<ContactConfigResponseDto | void> {
-    const config = await this.getContactConfigUseCase.execute(user);
+    const config = await this.getContactConfigUseCase.execute();
     if (!config) {
       res.status(HttpStatus.NO_CONTENT).end();
       return;
@@ -34,10 +32,9 @@ export class ContactController {
   @Put('config')
   @HttpCode(HttpStatus.OK)
   async updateConfig(
-    @CurrentUser() user: IUser,
     @Body() dto: UpdateContactConfigRequestDto,
   ): Promise<ContactConfigResponseDto> {
-    const config = await this.updateContactConfigUseCase.execute(user, dto);
+    const config = await this.updateContactConfigUseCase.execute(dto);
     return new ContactConfigResponseDto(config);
   }
 }

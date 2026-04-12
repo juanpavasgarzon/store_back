@@ -24,6 +24,7 @@ export class ListPublicCategoriesUseCase {
 
     return paginate<Category>(qb, query, {
       defaultSort: [{ field: 'name', order: SortOrder.ASC }],
+      maxFilterDepth: 2,
     });
   }
 }

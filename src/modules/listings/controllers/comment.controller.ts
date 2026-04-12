@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Body, Param, Query, HttpCode, HttpStatus } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { CurrentUser, Public, RequirePermissions } from '../../../shared';
 import { PERMISSIONS } from '../../../shared/security';
 import type { IUser } from '../../../shared';
@@ -34,6 +35,7 @@ export class CommentController {
   }
 
   @RequirePermissions(PERMISSIONS.COMMENTS_CREATE)
+  @Throttle({ default: { ttl: 60000, limit: 5 } })
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(

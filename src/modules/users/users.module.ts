@@ -15,9 +15,10 @@ import { SetUserActiveUseCase } from './use-cases/set-user-active.use-case';
 import { SetUserRoleUseCase } from './use-cases/set-user-role.use-case';
 import { DeleteUserUseCase } from './use-cases/delete-user.use-case';
 import { ListingsModule } from '../listings/listings.module';
+import { AuditModule } from '../audit/audit.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), ListingsModule],
+  imports: [TypeOrmModule.forFeature([User]), ListingsModule, AuditModule],
   controllers: [UsersController, MeController],
   providers: [
     UserService,

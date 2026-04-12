@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Listing } from '../entities/listing.entity';
 import { LISTING_STATUS } from '../constants/listing-status.constants';
 import {
@@ -28,9 +28,27 @@ export class ListListingsUseCase {
       .andWhere('l.status = :status', { status: LISTING_STATUS.ACTIVE })
       .andWhere('(l.expiresAt IS NULL OR l.expiresAt > NOW())');
 
-    return paginate<Listing>(qb, query, {
-      searchFields: ['title', 'description', 'location', 'sector'],
-      defaultSort: [{ field: 'createdAt', order: SortOrder.DESC }],
+    const paginationQuery = this.applyFullTextSearch(qb, query);
+
+    return paginate<Listing>(qb, paginationQuery, {
+      defaultSort: [
+        { field: 'isBoosted', order: SortOrder.DESC },
+        { field: 'createdAt', order: SortOrder.DESC },
+      ],
+      maxFilterDepth: 2,
     });
+  }
+
+  private applyFullTextSearch(
+    qb: SelectQueryBuilder<Listing>,
+    query: PaginationQuery,
+  ): PaginationQuery {
+    if (!query.search?.trim()) {
+      return query;
+    }
+    qb.andWhere(`l."searchVector" @@ plainto_tsquery('spanish', :searchTerm)`, {
+      searchTerm: query.search.trim(),
+    });
+    return { ...query, search: undefined };
   }
 }

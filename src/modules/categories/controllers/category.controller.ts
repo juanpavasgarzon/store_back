@@ -9,7 +9,9 @@ import {
   Query,
   HttpCode,
   HttpStatus,
+  UseInterceptors,
 } from '@nestjs/common';
+import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 import { Public, RequirePermissions } from '../../../shared';
 import { PERMISSIONS } from '../../../shared/security';
 import {
@@ -39,6 +41,9 @@ export class CategoryController {
   ) {}
 
   @Public()
+  @UseInterceptors(CacheInterceptor)
+  @CacheKey('categories_public')
+  @CacheTTL(300000)
   @Get('public')
   @HttpCode(HttpStatus.OK)
   async listPublic(

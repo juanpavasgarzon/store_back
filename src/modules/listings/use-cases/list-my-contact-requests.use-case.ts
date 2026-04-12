@@ -25,6 +25,7 @@ export class ListMyContactRequestsUseCase {
 
     return paginate<ContactRequest>(qb, query, {
       defaultSort: [{ field: 'createdAt', order: SortOrder.DESC }],
+      maxFilterDepth: 2,
     });
   }
 }

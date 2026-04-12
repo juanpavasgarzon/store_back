@@ -8,6 +8,7 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
+  Index,
 } from 'typeorm';
 import { Category } from '../../categories/entities/category.entity';
 import { User } from '../../users/entities/user.entity';
@@ -63,6 +64,16 @@ export class Listing {
 
   @Column({ default: true })
   isActive!: boolean;
+
+  @Column({ default: false })
+  isBoosted!: boolean;
+
+  @Column({ type: 'timestamp', nullable: true })
+  boostedUntil!: Date | null;
+
+  @Index({ spatial: false })
+  @Column({ type: 'tsvector', nullable: true, select: false, insert: false, update: false })
+  searchVector!: unknown;
 
   @CreateDateColumn()
   createdAt!: Date;

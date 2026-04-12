@@ -1,8 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
+import sanitizeHtml from 'sanitize-html';
 import { Listing } from '../entities/listing.entity';
 import { ListingVariantValue } from '../entities/listing-variant-value.entity';
+import { ListingPriceHistory } from '../entities/listing-price-history.entity';
 import { CategoryService } from '../../categories/services/category.service';
 import { ROLES } from '../../../shared/security';
 import type { IUser } from '../../../shared';
@@ -15,6 +17,8 @@ export class UpdateListingUseCase {
     private readonly listingRepository: Repository<Listing>,
     @InjectRepository(ListingVariantValue)
     private readonly listingVariantValueRepository: Repository<ListingVariantValue>,
+    @InjectRepository(ListingPriceHistory)
+    private readonly listingPriceHistoryRepository: Repository<ListingPriceHistory>,
     private readonly categoryService: CategoryService,
     private readonly dataSource: DataSource,
   ) {}
@@ -35,15 +39,18 @@ export class UpdateListingUseCase {
       }
     }
 
+    const priceChanged = dto.price != null && String(dto.price) !== listing.price;
+    const previousPrice = listing.price;
+
     await this.dataSource.transaction(async (manager) => {
       if (dto.categoryId != null) {
         listing.categoryId = dto.categoryId;
       }
       if (dto.title != null) {
-        listing.title = dto.title;
+        listing.title = sanitizeHtml(dto.title, { allowedTags: [] });
       }
       if (dto.description != null) {
-        listing.description = dto.description;
+        listing.description = sanitizeHtml(dto.description, { allowedTags: [] });
       }
       if (dto.price != null) {
         listing.price = String(dto.price);
@@ -67,6 +74,15 @@ export class UpdateListingUseCase {
         listing.expiresAt = dto.expiresAt != null ? new Date(dto.expiresAt) : null;
       }
       await manager.save(listing);
+
+      if (priceChanged) {
+        const priceHistory = manager.create(ListingPriceHistory, {
+          listingId: listing.id,
+          price: previousPrice,
+          changedByUserId: user.id,
+        });
+        await manager.save(priceHistory);
+      }
 
       if (dto.variants != null) {
         await manager.delete(ListingVariantValue, { listingId: id });

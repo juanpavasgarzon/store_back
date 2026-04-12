@@ -27,6 +27,7 @@ export class ListMyFavoritesUseCase {
 
     return paginate<Favorite>(qb, query, {
       defaultSort: [{ field: 'createdAt', order: SortOrder.DESC }],
+      maxFilterDepth: 2,
     });
   }
 }

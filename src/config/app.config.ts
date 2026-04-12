@@ -5,4 +5,5 @@ export const appConfig = registerAs('app', () => ({
   port: parseInt(process.env.PORT!, 10),
   apiPrefix: process.env.API_PREFIX!,
   corsOrigin: process.env.CORS_ORIGIN!,
+  frontendUrl: process.env.FRONTEND_URL!,
 }));

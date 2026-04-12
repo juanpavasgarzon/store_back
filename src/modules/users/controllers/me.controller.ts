@@ -1,4 +1,5 @@
 import { Controller, Get, Patch, Body, Query, HttpCode, HttpStatus } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { CurrentUser, RequirePermissions } from '../../../shared';
 import { PERMISSIONS } from '../../../shared/security';
 import type { IUser } from '../../../shared';
@@ -95,6 +96,7 @@ export class MeController {
     return new MeProfileResponseDto(updated);
   }
 
+  @Throttle({ default: { ttl: 60000, limit: 5 } })
   @RequirePermissions(PERMISSIONS.USERS_ME_READ)
   @Patch('password')
   @HttpCode(HttpStatus.NO_CONTENT)

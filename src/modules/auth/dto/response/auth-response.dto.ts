@@ -2,10 +2,12 @@ import type { IAuthResponse, IUserResponse } from './auth-response.interface';
 
 export class AuthResponseDto implements IAuthResponse {
   accessToken: string;
+  refreshToken: string;
   user: UserResponseDto;
 
   constructor(data: IAuthResponse) {
     this.accessToken = data.accessToken;
+    this.refreshToken = data.refreshToken;
     this.user = new UserResponseDto(data.user);
   }
 }

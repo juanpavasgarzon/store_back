@@ -1,10 +1,12 @@
 import { IsOptional, IsDateString, IsIn, IsString, MaxLength } from 'class-validator';
 import { APPOINTMENT_STATUS } from '../../constants/appointment-status.constants';
 import type { AppointmentStatus } from '../../constants/appointment-status.constants';
+import { IsFutureDate } from '../../../../shared';
 
 export class UpdateAppointmentRequestDto {
   @IsOptional()
   @IsDateString()
+  @IsFutureDate()
   scheduledAt?: string;
 
   @IsOptional()

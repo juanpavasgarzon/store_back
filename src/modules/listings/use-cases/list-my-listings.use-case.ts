@@ -29,6 +29,7 @@ export class ListMyListingsUseCase {
     return paginate<Listing>(qb, query, {
       searchFields: ['title', 'description', 'location'],
       defaultSort: [{ field: 'createdAt', order: SortOrder.DESC }],
+      maxFilterDepth: 2,
     });
   }
 }

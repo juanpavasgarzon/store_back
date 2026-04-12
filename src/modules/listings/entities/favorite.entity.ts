@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Listing } from './listing.entity';
+import { FavoriteCollection } from './favorite-collection.entity';
 
 @Entity('favorites')
 @Unique(['userId', 'listingId'])
@@ -22,6 +23,9 @@ export class Favorite {
 
   @Column('uuid')
   listingId!: string;
+
+  @Column({ type: 'uuid', nullable: true })
+  collectionId!: string | null;
 
   @CreateDateColumn()
   createdAt!: Date;
@@ -36,4 +40,8 @@ export class Favorite {
   @ManyToOne(() => Listing, (l) => l.favorites, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'listingId' })
   listing!: Listing;
+
+  @ManyToOne(() => FavoriteCollection, (c) => c.favorites, { onDelete: 'SET NULL', nullable: true })
+  @JoinColumn({ name: 'collectionId' })
+  collection!: FavoriteCollection | null;
 }

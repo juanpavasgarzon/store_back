@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Param, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  HttpCode,
+  HttpStatus,
+  UseInterceptors,
+} from '@nestjs/common';
+import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 import { Public, RequirePermissions } from '../../../shared';
 import { PERMISSIONS } from '../../../shared/security';
 import { GetLegalDocumentUseCase } from '../use-cases/get-legal-document.use-case';
@@ -16,6 +26,9 @@ export class LegalController {
   ) {}
 
   @Public()
+  @UseInterceptors(CacheInterceptor)
+  @CacheKey('legal_list')
+  @CacheTTL(600000)
   @Get()
   @HttpCode(HttpStatus.OK)
   async list(): Promise<LegalDocumentResponseDto[]> {
@@ -24,6 +37,8 @@ export class LegalController {
   }
 
   @Public()
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(600000)
   @Get(':slug')
   @HttpCode(HttpStatus.OK)
   async getBySlug(@Param('slug') slug: string): Promise<LegalDocumentResponseDto> {

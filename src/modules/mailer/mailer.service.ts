@@ -33,7 +33,9 @@ export class MailerService {
 
   async sendMail(options: SendMailOptions): Promise<void> {
     if (!this.transporter) {
-      this.logger.debug(`[MAIL SKIPPED] to=${options.to} subject="${options.subject}"`);
+      this.logger.warn(
+        `[MAIL NOT SENT] SMTP is not configured. to="${options.to}" subject="${options.subject}"`,
+      );
       return;
     }
     await this.transporter.sendMail({

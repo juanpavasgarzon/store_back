@@ -26,11 +26,11 @@ export interface ListingResponseShape {
   category?: ListingCategoryResponse;
   title: string;
   description: string;
-  price: string;
+  price: number;
   location: string;
   sector: string | null;
-  latitude: string | null;
-  longitude: string | null;
+  latitude: number | null;
+  longitude: number | null;
   status: string;
   expiresAt: Date | null;
   isActive: boolean;

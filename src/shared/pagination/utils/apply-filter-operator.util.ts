@@ -81,9 +81,9 @@ export function applyFilterOperator<T extends ObjectLiteral>(
     case '$null':
       if (value === true || value === 'true' || value === '1') {
         qb.andWhere(`${fullField} IS NULL`);
-      } else {
-        qb.andWhere(`${fullField} IS NOT NULL`);
+        break;
       }
+      qb.andWhere(`${fullField} IS NOT NULL`);
       break;
     case '$between':
       if (Array.isArray(value) && value.length === 2) {
@@ -158,6 +158,7 @@ export function buildCondition(
         return { sql: `${fullField} IS NULL`, params: {} };
       }
       return { sql: `${fullField} IS NOT NULL`, params: {} };
+
     default:
       return null;
   }

@@ -9,8 +9,9 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { RequirePermissions } from '../../../shared';
+import { CurrentUser, RequirePermissions } from '../../../shared';
 import { PERMISSIONS } from '../../../shared/security';
+import type { IUser } from '../../../shared';
 import { ListUsersUseCase } from '../use-cases/list-users.use-case';
 import { SetUserActiveUseCase } from '../use-cases/set-user-active.use-case';
 import { SetUserRoleUseCase } from '../use-cases/set-user-role.use-case';
@@ -50,18 +51,23 @@ export class UsersController {
   @Patch(':id/active')
   @HttpCode(HttpStatus.OK)
   async setActive(
+    @CurrentUser() actor: IUser,
     @Param('id') id: string,
     @Body() dto: SetUserActiveDto,
   ): Promise<UserResponseDto> {
-    const user = await this.setUserActiveUseCase.execute(id, dto.isActive);
+    const user = await this.setUserActiveUseCase.execute(id, dto.isActive, actor.id);
     return new UserResponseDto(user);
   }
 
   @RequirePermissions(PERMISSIONS.USERS_ROLE_UPDATE)
   @Patch(':id/role')
   @HttpCode(HttpStatus.OK)
-  async setRole(@Param('id') id: string, @Body() dto: SetUserRoleDto): Promise<UserResponseDto> {
-    const user = await this.setUserRoleUseCase.execute(id, dto.role);
+  async setRole(
+    @CurrentUser() actor: IUser,
+    @Param('id') id: string,
+    @Body() dto: SetUserRoleDto,
+  ): Promise<UserResponseDto> {
+    const user = await this.setUserRoleUseCase.execute(id, dto.role, actor.id);
     return new UserResponseDto(user);
   }
 

@@ -1,11 +1,14 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { ValidationPipe, VersioningType, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
 import compression from 'compression';
 import type { HelmetOptions } from 'helmet';
 import { AppModule } from './app.module';
-import { AllExceptionsFilter, httpRequestLogger } from './shared';
+import { AllExceptionsFilter, httpRequestLogger, requestIdMiddleware } from './shared';
+
+const logger = new Logger('Bootstrap');
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -20,7 +23,7 @@ async function bootstrap() {
   };
   app.use(helmet(helmetOptions));
   app.use(compression());
-
+  app.use(requestIdMiddleware);
   app.use(httpRequestLogger);
 
   const corsOrigin = config.get<string>('app.corsOrigin');
@@ -46,11 +49,29 @@ async function bootstrap() {
   app.setGlobalPrefix(apiPrefix);
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
 
+  if (!isProduction) {
+    const swaggerConfig = new DocumentBuilder()
+      .setTitle('Store API')
+      .setDescription('API for Pavas Store — real estate, vehicles and lots listings platform')
+      .setVersion('1.0')
+      .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'JWT')
+      .build();
+
+    const document = SwaggerModule.createDocument(app, swaggerConfig);
+
+    SwaggerModule.setup(`${apiPrefix}/docs`, app, document, {
+      swaggerOptions: { persistAuthorization: true },
+    });
+
+    logger.log(`Swagger docs available at /${apiPrefix}/docs`);
+  }
+
   const port = config.get<number>('app.port', 3001);
   await app.listen(port, '0.0.0.0');
+  logger.log(`Application running on port ${port} [${nodeEnv}]`);
 }
 
-bootstrap().catch((error) => {
-  console.error(error);
+bootstrap().catch((error: unknown) => {
+  logger.error('Fatal error during bootstrap', error);
   process.exit(1);
 });

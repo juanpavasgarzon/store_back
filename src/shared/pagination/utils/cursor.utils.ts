@@ -1,4 +1,7 @@
+import { Logger } from '@nestjs/common';
 import type { CursorPayload, DecodedCursorPayload } from '../interfaces/cursor.interface';
+
+const logger = new Logger('CursorUtils');
 
 export function encodeCursor(payload: CursorPayload): string {
   const data = JSON.stringify({
@@ -20,7 +23,8 @@ export function decodeCursor(cursor: string): CursorPayload | null {
       id: parsed.id,
       sortValue: (parsed.sortValue ?? parsed.id) as string | number | Date,
     };
-  } catch {
+  } catch (error: unknown) {
+    logger.debug('Failed to decode cursor', error);
     return null;
   }
 }

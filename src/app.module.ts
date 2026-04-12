@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
+import { CacheModule } from '@nestjs/cache-manager';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
@@ -10,6 +12,10 @@ import { ListingsModule } from './modules/listings/listings.module';
 import { ContactModule } from './modules/contact/contact.module';
 import { LegalModule } from './modules/legal/legal.module';
 import { MailerModule } from './modules/mailer/mailer.module';
+import { HealthModule } from './modules/health/health.module';
+import { AuditModule } from './modules/audit/audit.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { SearchModule } from './modules/search/search.module';
 import { ConfigModule } from './config/config.module';
 
 @Module({
@@ -18,9 +24,14 @@ import { ConfigModule } from './config/config.module';
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
-        limit: 100,
+        limit: 50,
       },
     ]),
+    CacheModule.register({
+      isGlobal: true,
+      ttl: 60000,
+    }),
+    EventEmitterModule.forRoot(),
     ScheduleModule.forRoot(),
     DatabaseModule,
     MailerModule,
@@ -30,6 +41,10 @@ import { ConfigModule } from './config/config.module';
     ListingsModule,
     ContactModule,
     LegalModule,
+    HealthModule,
+    AuditModule,
+    NotificationsModule,
+    SearchModule,
   ],
   providers: [
     {

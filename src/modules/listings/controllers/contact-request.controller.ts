@@ -1,4 +1,5 @@
 import { Controller, Post, Patch, Body, Param, HttpCode, HttpStatus } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { CurrentUser, RequirePermissions } from '../../../shared';
 import { PERMISSIONS } from '../../../shared/security';
 import type { IUser } from '../../../shared';
@@ -16,6 +17,7 @@ export class ContactRequestController {
   ) {}
 
   @RequirePermissions(PERMISSIONS.CONTACT_REQUESTS_CREATE)
+  @Throttle({ default: { ttl: 60000, limit: 3 } })
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(
@@ -32,9 +34,10 @@ export class ContactRequestController {
   @HttpCode(HttpStatus.OK)
   async updateStatus(
     @Param('id') id: string,
+    @CurrentUser() user: IUser,
     @Body() dto: UpdateContactRequestStatusDto,
   ): Promise<ContactRequestResponseDto> {
-    const updated = await this.updateContactRequestStatusUseCase.execute(id, dto.status);
+    const updated = await this.updateContactRequestStatusUseCase.execute(id, dto.status, user);
     return new ContactRequestResponseDto(updated);
   }
 }

@@ -32,6 +32,7 @@ export class ListCommentsUseCase {
     return paginate<Comment>(qb, query, {
       searchFields: ['content'],
       defaultSort: [{ field: 'createdAt', order: SortOrder.DESC }],
+      maxFilterDepth: 2,
     });
   }
 }

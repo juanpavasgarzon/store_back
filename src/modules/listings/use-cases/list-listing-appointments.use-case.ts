@@ -31,6 +31,7 @@ export class ListListingAppointmentsUseCase {
 
     return paginate<Appointment>(qb, query, {
       defaultSort: [{ field: 'scheduledAt', order: SortOrder.ASC }],
+      maxFilterDepth: 2,
     });
   }
 }

@@ -31,6 +31,7 @@ export class ListListingRatingsUseCase {
 
     return paginate<Rating>(qb, query, {
       defaultSort: [{ field: 'createdAt', order: SortOrder.DESC }],
+      maxFilterDepth: 2,
     });
   }
 }

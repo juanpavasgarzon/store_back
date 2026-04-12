@@ -12,7 +12,7 @@ export class GenerateUniqueListingCodeUseCase {
 
   async execute(length: number = 8): Promise<string> {
     let attempts = 0;
-    while (attempts < 50) {
+    while (attempts < 100) {
       const code = this.randomCode(length);
       const exists = await this.listingRepository.count({ where: { code } });
       if (exists === 0) {
@@ -20,7 +20,7 @@ export class GenerateUniqueListingCodeUseCase {
       }
       attempts++;
     }
-    throw new Error('Unable to generate unique listing code');
+    throw new Error('Unable to generate unique listing code after 100 attempts');
   }
 
   private randomCode(length: number): string {

@@ -10,6 +10,7 @@ import {
   StreamableFile,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { Throttle } from '@nestjs/throttler';
 import { memoryStorage } from 'multer';
 import { Public, RequirePermissions } from '../../../shared';
 import { PERMISSIONS } from '../../../shared/security';
@@ -27,6 +28,7 @@ export class ListingPhotoController {
   ) {}
 
   @RequirePermissions(PERMISSIONS.LISTINGS_UPDATE)
+  @Throttle({ default: { ttl: 60000, limit: 20 } })
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @UseInterceptors(
@@ -42,6 +44,7 @@ export class ListingPhotoController {
     const inputs = (files ?? []).map((f) => ({
       buffer: f.buffer,
       mimetype: f.mimetype,
+      size: f.size,
     }));
     const photos = await this.uploadListingPhotosUseCase.execute(listingId, inputs);
     return photos.map((p) => new ListingPhotoResponseDto(p));

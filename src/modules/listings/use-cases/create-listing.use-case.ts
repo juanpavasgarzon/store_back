@@ -1,10 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
+import sanitizeHtml from 'sanitize-html';
 import { Listing } from '../entities/listing.entity';
 import { ListingVariantValue } from '../entities/listing-variant-value.entity';
 import { CategoryService } from '../../categories/services/category.service';
-import { FindCategoryVariantByIdUseCase } from '../../categories/use-cases/find-category-variant-by-id.use-case';
+import { FindCategoryVariantsByIdsUseCase } from '../../categories/use-cases/find-category-variants-by-ids.use-case';
 import { ListingCodeService } from '../services/listing-code.service';
 import { LISTING_STATUS } from '../constants/listing-status.constants';
 import type { IUser } from '../../../shared';
@@ -18,7 +19,7 @@ export class CreateListingUseCase {
     @InjectRepository(ListingVariantValue)
     private readonly listingVariantValueRepository: Repository<ListingVariantValue>,
     private readonly categoryService: CategoryService,
-    private readonly findCategoryVariantByIdUseCase: FindCategoryVariantByIdUseCase,
+    private readonly findCategoryVariantsByIdsUseCase: FindCategoryVariantsByIdsUseCase,
     private readonly listingCodeService: ListingCodeService,
     private readonly dataSource: DataSource,
   ) {}
@@ -30,10 +31,12 @@ export class CreateListingUseCase {
     }
 
     const categoryVariantIds = dto.variants?.map((v) => v.categoryVariantId) ?? [];
-    for (const categoryVariantId of categoryVariantIds) {
-      const variant = await this.findCategoryVariantByIdUseCase.execute(categoryVariantId);
-      if (!variant) {
-        throw new NotFoundException(`Category variant not found: ${categoryVariantId}`);
+    if (categoryVariantIds.length > 0) {
+      const foundVariants = await this.findCategoryVariantsByIdsUseCase.execute(categoryVariantIds);
+      if (foundVariants.length !== categoryVariantIds.length) {
+        const foundIds = new Set(foundVariants.map((v) => v.id));
+        const missingId = categoryVariantIds.find((id) => !foundIds.has(id));
+        throw new NotFoundException(`Category variant not found: ${missingId}`);
       }
     }
 
@@ -44,8 +47,8 @@ export class CreateListingUseCase {
         code,
         userId: user.id,
         categoryId: dto.categoryId,
-        title: dto.title,
-        description: dto.description,
+        title: sanitizeHtml(dto.title, { allowedTags: [] }),
+        description: sanitizeHtml(dto.description, { allowedTags: [] }),
         price: String(dto.price),
         location: dto.location,
         sector: dto.sector ?? null,

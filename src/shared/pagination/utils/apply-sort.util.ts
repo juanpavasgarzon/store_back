@@ -30,9 +30,9 @@ export function applySort<T extends ObjectLiteral>(
     const order = (rule.order?.toString().toUpperCase() ?? 'ASC') as 'ASC' | 'DESC';
     if (index === 0) {
       qb.orderBy(fullField, order);
-    } else {
-      qb.addOrderBy(fullField, order);
+      return;
     }
+    qb.addOrderBy(fullField, order);
   });
 
   const primary = sortRules[0];

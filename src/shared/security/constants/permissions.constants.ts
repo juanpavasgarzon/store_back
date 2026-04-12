@@ -3,6 +3,10 @@ export const PERMISSIONS = {
   LISTINGS_READ: 'listings:read',
   LISTINGS_UPDATE: 'listings:update',
   LISTINGS_DELETE: 'listings:delete',
+  LISTINGS_STATS_READ: 'listings:stats:read',
+  LISTINGS_REPORTS_CREATE: 'listings:reports:create',
+  LISTINGS_REPORTS_READ: 'listings:reports:read',
+  LISTINGS_REPORTS_UPDATE: 'listings:reports:update',
   CATEGORIES_CREATE: 'categories:create',
   CATEGORIES_READ: 'categories:read',
   CATEGORIES_UPDATE: 'categories:update',
@@ -29,4 +33,6 @@ export const PERMISSIONS = {
   CALENDAR_CREATE: 'calendar:create',
   CALENDAR_UPDATE: 'calendar:update',
   CALENDAR_DELETE: 'calendar:delete',
+  LISTINGS_BOOST_CREATE: 'listings:boost:create',
+  LISTINGS_EXPORT: 'listings:export',
 } as const;

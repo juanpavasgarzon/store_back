@@ -24,6 +24,7 @@ export class ListUsersUseCase {
     return paginate<User>(qb, query, {
       searchFields: ['email', 'name'],
       defaultSort: [{ field: 'createdAt', order: SortOrder.DESC }],
+      maxFilterDepth: 2,
     });
   }
 }
