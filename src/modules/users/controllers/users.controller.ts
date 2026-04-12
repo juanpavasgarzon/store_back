@@ -74,7 +74,7 @@ export class UsersController {
   @RequirePermissions(PERMISSIONS.USERS_DELETE)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async delete(@Param('id') id: string): Promise<void> {
-    await this.deleteUserUseCase.execute(id);
+  async delete(@CurrentUser() actor: IUser, @Param('id') id: string): Promise<void> {
+    await this.deleteUserUseCase.execute(id, actor.id);
   }
 }

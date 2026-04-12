@@ -1,5 +1,12 @@
-import { Controller, Get, Put, Body, Res, HttpCode, HttpStatus } from '@nestjs/common';
-import type { Response } from 'express';
+import {
+  Controller,
+  Get,
+  Put,
+  Body,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
+} from '@nestjs/common';
 import { RequirePermissions } from '../../../shared';
 import { PERMISSIONS } from '../../../shared/security';
 import { UpdateContactConfigUseCase } from '../use-cases/update-contact-config.use-case';
@@ -17,13 +24,10 @@ export class ContactController {
   @RequirePermissions(PERMISSIONS.CONTACT_CONFIG_READ)
   @Get('config')
   @HttpCode(HttpStatus.OK)
-  async getConfig(
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<ContactConfigResponseDto | void> {
+  async getConfig(): Promise<ContactConfigResponseDto> {
     const config = await this.getContactConfigUseCase.execute();
     if (!config) {
-      res.status(HttpStatus.NO_CONTENT).end();
-      return;
+      throw new NotFoundException('Contact configuration not found');
     }
     return new ContactConfigResponseDto(config);
   }

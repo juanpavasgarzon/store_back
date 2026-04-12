@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Controller,
   Get,
   Post,
@@ -33,6 +34,10 @@ import { GetListingPriceHistoryUseCase } from '../use-cases/get-listing-price-hi
 import { CompareListingsUseCase } from '../use-cases/compare-listings.use-case';
 import { BoostListingUseCase } from '../use-cases/boost-listing.use-case';
 import { ExportListingsCsvUseCase } from '../use-cases/export-listings-csv.use-case';
+import {
+  ListTrendingListingsUseCase,
+  type TrendingPeriod,
+} from '../use-cases/list-trending-listings.use-case';
 import { CreateListingRequestDto } from '../dto/request/create-listing.dto';
 import { UpdateListingRequestDto } from '../dto/request/update-listing.dto';
 import { CompareListingsRequestDto } from '../dto/request/compare-listings.dto';
@@ -64,13 +69,17 @@ export class ListingController {
     private readonly compareListingsUseCase: CompareListingsUseCase,
     private readonly boostListingUseCase: BoostListingUseCase,
     private readonly exportListingsCsvUseCase: ExportListingsCsvUseCase,
+    private readonly listTrendingListingsUseCase: ListTrendingListingsUseCase,
   ) {}
 
   @RequirePermissions(PERMISSIONS.LISTINGS_EXPORT)
   @Get('export/csv')
   @HttpCode(HttpStatus.OK)
-  async exportCsv(@Res() res: Response): Promise<void> {
-    const csv = await this.exportListingsCsvUseCase.execute();
+  async exportCsv(
+    @Query(ParsePaginationQueryPipe) query: PaginationRequest,
+    @Res() res: Response,
+  ): Promise<void> {
+    const csv = await this.exportListingsCsvUseCase.execute(query);
     const filename = `listings-${new Date().toISOString().slice(0, 10)}.csv`;
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
@@ -103,10 +112,19 @@ export class ListingController {
     @Query('radius') radius: string,
     @Query(ParsePaginationQueryPipe) query: PaginationRequest,
   ): Promise<PaginationResponse<ListingResponseDto>> {
+    const parsedLat = parseFloat(lat);
+    const parsedLng = parseFloat(lng);
+    if (!Number.isFinite(parsedLat) || !Number.isFinite(parsedLng)) {
+      throw new BadRequestException('lat and lng must be valid numbers');
+    }
+    const parsedRadius = radius != null ? parseFloat(radius) : undefined;
+    if (parsedRadius !== undefined && !Number.isFinite(parsedRadius)) {
+      throw new BadRequestException('radius must be a valid number');
+    }
     const result = await this.listNearbyListingsUseCase.execute(
-      parseFloat(lat),
-      parseFloat(lng),
-      radius != null ? parseFloat(radius) : undefined,
+      parsedLat,
+      parsedLng,
+      parsedRadius,
       query,
     );
     return new PaginationResponse(
@@ -120,6 +138,22 @@ export class ListingController {
   @HttpCode(HttpStatus.OK)
   async compare(@Body() dto: CompareListingsRequestDto): Promise<ListingResponseDto[]> {
     const listings = await this.compareListingsUseCase.execute(dto.ids);
+    return listings.map((l) => new ListingResponseDto(l));
+  }
+
+  @Public()
+  @Get('trending')
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(300000)
+  async listTrending(
+    @Query('period') period: string,
+    @Query('limit') limit: string,
+  ): Promise<ListingResponseDto[]> {
+    const safePeriod: TrendingPeriod = period === '24h' ? '24h' : '7d';
+    const parsedLimit = parseInt(limit, 10);
+    const safeLimit = Number.isFinite(parsedLimit) && parsedLimit > 0 ? parsedLimit : undefined;
+    const listings = await this.listTrendingListingsUseCase.execute(safePeriod, safeLimit);
     return listings.map((l) => new ListingResponseDto(l));
   }
 
@@ -199,12 +233,13 @@ export class ListingController {
 
   @RequirePermissions(PERMISSIONS.LISTINGS_BOOST_CREATE)
   @Post(':id/boost')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   async boost(
+    @CurrentUser() user: IUser,
     @Param('id') id: string,
     @Body() request: BoostListingRequestDto,
   ): Promise<ListingResponseDto> {
-    const listing = await this.boostListingUseCase.execute(id, request);
+    const listing = await this.boostListingUseCase.execute(id, request, user);
     return new ListingResponseDto(listing);
   }
 

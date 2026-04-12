@@ -1,6 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
+import type { Cache } from 'cache-manager';
 import sanitizeHtml from 'sanitize-html';
 import { Listing } from '../entities/listing.entity';
 import { ListingVariantValue } from '../entities/listing-variant-value.entity';
@@ -21,6 +23,7 @@ export class UpdateListingUseCase {
     private readonly listingPriceHistoryRepository: Repository<ListingPriceHistory>,
     private readonly categoryService: CategoryService,
     private readonly dataSource: DataSource,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
   async execute(id: string, user: IUser, dto: UpdateListingRequestDto): Promise<Listing> {
@@ -106,6 +109,7 @@ export class UpdateListingUseCase {
     if (!updated) {
       throw new NotFoundException('Listing not found');
     }
+    await this.cacheManager.clear();
     return updated;
   }
 }

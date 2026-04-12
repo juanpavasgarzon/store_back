@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Parser } from 'json2csv';
 import { Listing } from '../entities/listing.entity';
+import { LISTING_STATUS } from '../constants/listing-status.constants';
+import { paginate, SortOrder, type PaginationQuery } from '../../../shared/pagination';
 
 interface ListingCsvRow {
   code: string;
@@ -16,6 +18,8 @@ interface ListingCsvRow {
   createdAt: string;
 }
 
+const CSV_EXPORT_LIMIT = 5000;
+
 @Injectable()
 export class ExportListingsCsvUseCase {
   constructor(
@@ -23,14 +27,22 @@ export class ExportListingsCsvUseCase {
     private readonly listingRepository: Repository<Listing>,
   ) {}
 
-  async execute(): Promise<string> {
-    const listings = await this.listingRepository.find({
-      relations: ['category'],
-      order: { createdAt: 'DESC' },
-      withDeleted: false,
-    });
+  async execute(query: PaginationQuery = {}): Promise<string> {
+    const qb = this.listingRepository
+      .createQueryBuilder('l')
+      .leftJoinAndSelect('l.category', 'c')
+      .where('l.status = :status', { status: LISTING_STATUS.ACTIVE });
 
-    const rows: ListingCsvRow[] = listings.map((listing) => ({
+    const result = await paginate<Listing>(
+      qb,
+      { ...query, limit: CSV_EXPORT_LIMIT },
+      {
+        defaultSort: [{ field: 'createdAt', order: SortOrder.DESC }],
+        maxFilterDepth: 2,
+      },
+    );
+
+    const rows: ListingCsvRow[] = result.data.map((listing) => ({
       code: listing.code,
       title: listing.title,
       price: listing.price,

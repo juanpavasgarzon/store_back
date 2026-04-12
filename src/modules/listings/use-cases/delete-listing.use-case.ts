@@ -1,6 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import type { Cache } from 'cache-manager';
 import { Listing } from '../entities/listing.entity';
 import { AuditService } from '../../audit/audit.service';
 import { AUDIT_ACTION } from '../../audit/constants/audit-action.constants';
@@ -13,6 +15,7 @@ export class DeleteListingUseCase {
     @InjectRepository(Listing)
     private readonly listingRepository: Repository<Listing>,
     private readonly auditService: AuditService,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
   async execute(id: string, user: IUser): Promise<void> {
@@ -25,6 +28,7 @@ export class DeleteListingUseCase {
       throw new NotFoundException('Listing not found');
     }
     await this.listingRepository.softDelete(id);
+    await this.cacheManager.clear();
     await this.auditService.log({
       actorId: user.id,
       action: AUDIT_ACTION.LISTING_DELETED,

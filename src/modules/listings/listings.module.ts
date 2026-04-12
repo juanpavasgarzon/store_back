@@ -69,6 +69,7 @@ import { CompareListingsUseCase } from './use-cases/compare-listings.use-case';
 import { BoostListingUseCase } from './use-cases/boost-listing.use-case';
 import { ExpireListingBoostsUseCase } from './use-cases/expire-listing-boosts.use-case';
 import { ExportListingsCsvUseCase } from './use-cases/export-listings-csv.use-case';
+import { ListTrendingListingsUseCase } from './use-cases/list-trending-listings.use-case';
 import { CreateFavoriteCollectionUseCase } from './use-cases/create-favorite-collection.use-case';
 import { ListFavoriteCollectionsUseCase } from './use-cases/list-favorite-collections.use-case';
 import { DeleteFavoriteCollectionUseCase } from './use-cases/delete-favorite-collection.use-case';
@@ -159,6 +160,7 @@ import { AuditModule } from '../audit/audit.module';
     BoostListingUseCase,
     ExpireListingBoostsUseCase,
     ExportListingsCsvUseCase,
+    ListTrendingListingsUseCase,
     CreateFavoriteCollectionUseCase,
     ListFavoriteCollectionsUseCase,
     DeleteFavoriteCollectionUseCase,
