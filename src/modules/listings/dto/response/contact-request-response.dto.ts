@@ -1,5 +1,6 @@
 import type { ContactRequest } from '../../entities/contact-request.entity';
 import type { ContactRequestStatus } from '../../constants/contact-request-status.constants';
+import { ListingResponseDto } from './listing-response.dto';
 
 export class ContactRequestResponseDto {
   id: string;
@@ -9,6 +10,7 @@ export class ContactRequestResponseDto {
   status: ContactRequestStatus;
   respondedAt: Date | null;
   createdAt: Date;
+  listing?: ListingResponseDto;
 
   constructor(contactRequest: ContactRequest) {
     this.id = contactRequest.id;
@@ -18,5 +20,8 @@ export class ContactRequestResponseDto {
     this.status = contactRequest.status;
     this.respondedAt = contactRequest.respondedAt ?? null;
     this.createdAt = contactRequest.createdAt;
+    if (contactRequest.listing) {
+      this.listing = new ListingResponseDto(contactRequest.listing);
+    }
   }
 }

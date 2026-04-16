@@ -29,6 +29,9 @@ export class CategoryVariant {
   @Column({ type: 'varchar', length: 20, default: 'text' })
   valueType!: VariantValueType;
 
+  @Column({ type: 'jsonb', nullable: true, default: [] })
+  options!: string[];
+
   @CreateDateColumn()
   createdAt!: Date;
 

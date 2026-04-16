@@ -47,7 +47,7 @@ export class UsersController {
     );
   }
 
-  @RequirePermissions(PERMISSIONS.USERS_UPDATE)
+  @RequirePermissions(PERMISSIONS.USERS_ACTIVATE)
   @Patch(':id/active')
   @HttpCode(HttpStatus.OK)
   async setActive(
@@ -67,7 +67,7 @@ export class UsersController {
     @Param('id') id: string,
     @Body() dto: SetUserRoleDto,
   ): Promise<UserResponseDto> {
-    const user = await this.setUserRoleUseCase.execute(id, dto.role, actor.id);
+    const user = await this.setUserRoleUseCase.execute(id, dto.role, actor);
     return new UserResponseDto(user);
   }
 

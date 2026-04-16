@@ -1,4 +1,10 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { join } from 'path';
@@ -9,6 +15,8 @@ import { Listing } from '../entities/listing.entity';
 import { ListingPhoto } from '../entities/listing-photo.entity';
 import { ALLOWED_PHOTO_MIMETYPES, MAX_PHOTO_SIZE_BYTES } from '../constants/photo-upload.constants';
 import { STORAGE_SERVICE, type IStorageService } from '../interfaces/storage-service.interface';
+import { hasPermission, PERMISSIONS } from '../../../shared/security';
+import type { IUser } from '../../../shared';
 
 const MAX_WIDTH = 1200;
 const THUMB_WIDTH = 400;
@@ -25,7 +33,7 @@ export class UploadListingPhotosUseCase {
     private readonly storageService: IStorageService,
   ) {}
 
-  async execute(listingId: string, files: UploadFileInput[]): Promise<ListingPhoto[]> {
+  async execute(listingId: string, user: IUser, files: UploadFileInput[]): Promise<ListingPhoto[]> {
     if (files.length === 0) {
       throw new BadRequestException('At least one photo is required');
     }
@@ -49,6 +57,9 @@ export class UploadListingPhotosUseCase {
     const listing = await this.listingRepository.findOne({ where: { id: listingId } });
     if (!listing) {
       throw new NotFoundException('Listing not found');
+    }
+    if (!hasPermission(user, PERMISSIONS.LISTINGS_MANAGE_ANY) && listing.userId !== user.id) {
+      throw new ForbiddenException('You do not have permission to upload photos to this listing');
     }
 
     const created: ListingPhoto[] = [];

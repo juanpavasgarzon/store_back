@@ -35,6 +35,7 @@ export class CreateCategoryVariantUseCase {
       name: dto.name,
       key: dto.key,
       valueType: dto.valueType ?? 'text',
+      options: dto.options ?? [],
     });
     return this.categoryVariantRepository.save(variant);
   }

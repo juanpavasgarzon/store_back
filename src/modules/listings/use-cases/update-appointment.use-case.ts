@@ -7,7 +7,7 @@ import { Listing } from '../entities/listing.entity';
 import { MailerService } from '../../mailer/mailer.service';
 import { LISTING_DOMAIN_EVENTS, type AppointmentStatusChangedEvent } from '../events';
 import type { IUser } from '../../../shared';
-import { ROLES } from '../../../shared/security';
+import { hasPermission, PERMISSIONS } from '../../../shared/security';
 import type { UpdateAppointmentRequestDto } from '../dto/request/update-appointment.dto';
 
 @Injectable()
@@ -65,8 +65,7 @@ export class UpdateAppointmentUseCase {
   }
 
   private async assertCanUpdate(appointment: Appointment, user: IUser): Promise<void> {
-    const isPrivileged = user.role === ROLES.ADMIN || user.role === ROLES.OWNER;
-    if (isPrivileged) {
+    if (hasPermission(user, PERMISSIONS.APPOINTMENTS_MANAGE_ANY)) {
       return;
     }
     if (appointment.userId === user.id) {

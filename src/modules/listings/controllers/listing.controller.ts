@@ -34,6 +34,7 @@ import { GetListingPriceHistoryUseCase } from '../use-cases/get-listing-price-hi
 import { CompareListingsUseCase } from '../use-cases/compare-listings.use-case';
 import { BoostListingUseCase } from '../use-cases/boost-listing.use-case';
 import { ExportListingsCsvUseCase } from '../use-cases/export-listings-csv.use-case';
+import { CountListingsUseCase } from '../use-cases/count-listings.use-case';
 import {
   ListTrendingListingsUseCase,
   type TrendingPeriod,
@@ -42,6 +43,7 @@ import { CreateListingRequestDto } from '../dto/request/create-listing.dto';
 import { UpdateListingRequestDto } from '../dto/request/update-listing.dto';
 import { CompareListingsRequestDto } from '../dto/request/compare-listings.dto';
 import { BoostListingRequestDto } from '../dto/request/boost-listing.dto';
+import { NearbyQueryDto } from '../dto/request/nearby-query.dto';
 import { ListingResponseDto } from '../dto/response/listing-response.dto';
 import { ListingStatsResponseDto } from '../dto/response/listing-stats-response.dto';
 import { ListingPriceHistoryResponseDto } from '../dto/response/listing-price-history-response.dto';
@@ -70,7 +72,16 @@ export class ListingController {
     private readonly boostListingUseCase: BoostListingUseCase,
     private readonly exportListingsCsvUseCase: ExportListingsCsvUseCase,
     private readonly listTrendingListingsUseCase: ListTrendingListingsUseCase,
+    private readonly countListingsUseCase: CountListingsUseCase,
   ) {}
+
+  @Public()
+  @Get('count')
+  @HttpCode(HttpStatus.OK)
+  async count(): Promise<{ count: number }> {
+    const count = await this.countListingsUseCase.execute();
+    return { count };
+  }
 
   @RequirePermissions(PERMISSIONS.LISTINGS_EXPORT)
   @Get('export/csv')
@@ -107,25 +118,31 @@ export class ListingController {
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(60000)
   async listNearby(
-    @Query('lat') lat: string,
-    @Query('lng') lng: string,
-    @Query('radius') radius: string,
-    @Query(ParsePaginationQueryPipe) query: PaginationRequest,
+    @Query() nearbyQuery: NearbyQueryDto,
   ): Promise<PaginationResponse<ListingResponseDto>> {
-    const parsedLat = parseFloat(lat);
-    const parsedLng = parseFloat(lng);
+    const parsedLat = parseFloat(nearbyQuery.lat);
+    const parsedLng = parseFloat(nearbyQuery.lng);
     if (!Number.isFinite(parsedLat) || !Number.isFinite(parsedLng)) {
       throw new BadRequestException('lat and lng must be valid numbers');
     }
-    const parsedRadius = radius != null ? parseFloat(radius) : undefined;
+    const parsedRadius = nearbyQuery.radius != null ? parseFloat(nearbyQuery.radius) : undefined;
     if (parsedRadius !== undefined && !Number.isFinite(parsedRadius)) {
       throw new BadRequestException('radius must be a valid number');
     }
+    const paginationQuery: PaginationRequest = {
+      limit: nearbyQuery.limit,
+      cursor: nearbyQuery.cursor,
+      search: nearbyQuery.search,
+      sort: nearbyQuery.sort,
+      filters: nearbyQuery.filters,
+      $or: nearbyQuery.$or,
+      $and: nearbyQuery.$and,
+    };
     const result = await this.listNearbyListingsUseCase.execute(
       parsedLat,
       parsedLng,
       parsedRadius,
-      query,
+      paginationQuery,
     );
     return new PaginationResponse(
       result.data.map((listing) => new ListingResponseDto(listing)),
@@ -165,11 +182,11 @@ export class ListingController {
     @Req() req: Request,
     @CurrentUser() user: IUser | undefined,
   ): Promise<ListingResponseDto> {
-    const listing = await this.getListingByCodeUseCase.execute(code);
+    const { listing, context } = await this.getListingByCodeUseCase.execute(code, user?.id ?? null);
     this.registerListingViewUseCase
       .execute(listing.id, user?.id ?? null, req.ip ?? null)
       .catch((error: unknown) => this.logger.error('Failed to register listing view', error));
-    return new ListingResponseDto(listing);
+    return new ListingResponseDto(listing, context);
   }
 
   @Public()
@@ -180,11 +197,11 @@ export class ListingController {
     @Req() req: Request,
     @CurrentUser() user: IUser | undefined,
   ): Promise<ListingResponseDto> {
-    const listing = await this.getListingUseCase.execute(id);
+    const { listing, context } = await this.getListingUseCase.execute(id, user?.id ?? null);
     this.registerListingViewUseCase
       .execute(listing.id, user?.id ?? null, req.ip ?? null)
       .catch((error: unknown) => this.logger.error('Failed to register listing view', error));
-    return new ListingResponseDto(listing);
+    return new ListingResponseDto(listing, context);
   }
 
   @RequirePermissions(PERMISSIONS.LISTINGS_STATS_READ)

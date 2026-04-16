@@ -8,7 +8,7 @@ import { Listing } from '../entities/listing.entity';
 import { ListingVariantValue } from '../entities/listing-variant-value.entity';
 import { ListingPriceHistory } from '../entities/listing-price-history.entity';
 import { CategoryService } from '../../categories/services/category.service';
-import { ROLES } from '../../../shared/security';
+import { hasPermission, PERMISSIONS } from '../../../shared/security';
 import type { IUser } from '../../../shared';
 import type { UpdateListingRequestDto } from '../dto/request/update-listing.dto';
 
@@ -17,10 +17,6 @@ export class UpdateListingUseCase {
   constructor(
     @InjectRepository(Listing)
     private readonly listingRepository: Repository<Listing>,
-    @InjectRepository(ListingVariantValue)
-    private readonly listingVariantValueRepository: Repository<ListingVariantValue>,
-    @InjectRepository(ListingPriceHistory)
-    private readonly listingPriceHistoryRepository: Repository<ListingPriceHistory>,
     private readonly categoryService: CategoryService,
     private readonly dataSource: DataSource,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
@@ -31,8 +27,7 @@ export class UpdateListingUseCase {
     if (!listing) {
       throw new NotFoundException('Listing not found');
     }
-    const isPrivileged = user.role === ROLES.ADMIN || user.role === ROLES.OWNER;
-    if (!isPrivileged && listing.userId !== user.id) {
+    if (!hasPermission(user, PERMISSIONS.LISTINGS_MANAGE_ANY) && listing.userId !== user.id) {
       throw new NotFoundException('Listing not found');
     }
     if (dto.categoryId != null) {

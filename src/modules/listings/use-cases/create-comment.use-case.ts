@@ -42,6 +42,13 @@ export class CreateCommentUseCase {
       this.eventEmitter.emit(LISTING_DOMAIN_EVENTS.COMMENT_CREATED, event);
     }
 
-    return saved;
+    const withUser = await this.commentRepository.findOne({
+      where: { id: saved.id },
+      relations: ['user'],
+    });
+    if (!withUser) {
+      throw new NotFoundException('Comment not found after create');
+    }
+    return withUser;
   }
 }

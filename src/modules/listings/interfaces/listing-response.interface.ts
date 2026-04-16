@@ -13,9 +13,9 @@ export interface ListingVariantValueResponse {
 }
 
 export interface ListingCategoryResponse {
-  id: string;
-  name: string;
-  slug: string;
+  id: string | null;
+  name: string | null;
+  slug: string | null;
 }
 
 export interface ListingResponseShape {
@@ -34,8 +34,17 @@ export interface ListingResponseShape {
   status: string;
   expiresAt: Date | null;
   isActive: boolean;
+  isBoosted: boolean;
+  boostedUntil: Date | null;
+  isFavorited: boolean | null;
+  myRating: number | null;
   createdAt: Date;
   updatedAt: Date;
   photos?: ListingPhotoResponse[];
   variants?: ListingVariantValueResponse[];
+}
+
+export interface ListingUserContext {
+  isFavorited: boolean;
+  myRating: number | null;
 }

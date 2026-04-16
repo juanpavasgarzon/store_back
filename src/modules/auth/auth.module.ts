@@ -18,6 +18,7 @@ import { RefreshAccessTokenUseCase } from './use-cases/refresh-access-token.use-
 import { LogoutUseCase } from './use-cases/logout.use-case';
 import { RequestPasswordResetUseCase } from './use-cases/request-password-reset.use-case';
 import { ResetPasswordUseCase } from './use-cases/reset-password.use-case';
+import { SetupUseCase } from './use-cases/setup.use-case';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { APP_GUARD } from '@nestjs/core';
@@ -50,6 +51,7 @@ import { APP_GUARD } from '@nestjs/core';
     LogoutUseCase,
     RequestPasswordResetUseCase,
     ResetPasswordUseCase,
+    SetupUseCase,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,

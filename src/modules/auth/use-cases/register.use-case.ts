@@ -1,10 +1,10 @@
-import { Injectable, ConflictException } from '@nestjs/common';
-import { AuthService } from '../services/auth.service';
+import { ConflictException, Injectable } from '@nestjs/common';
+import { ROLE_PERMISSIONS, ROLES } from '../../../shared/security';
 import { UserService } from '../../users/services/user.service';
-import { CreateRefreshTokenUseCase } from './create-refresh-token.use-case';
-import { ROLES } from '../../../shared/security';
-import type { IAuthResponse } from '../dto/response/auth-response.interface';
 import { RegisterRequestDto } from '../dto/request/register.dto';
+import type { IAuthResponse } from '../dto/response/auth-response.interface';
+import { AuthService } from '../services/auth.service';
+import { CreateRefreshTokenUseCase } from './create-refresh-token.use-case';
 
 @Injectable()
 export class RegisterUseCase {
@@ -33,6 +33,7 @@ export class RegisterUseCase {
       email: user.email,
       name: user.name,
       role: user.role,
+      permissions: ROLE_PERMISSIONS[user.role] ?? [],
     };
 
     const payload = this.authService.buildPayload(iUser);

@@ -6,7 +6,7 @@ import { ListingView } from '../entities/listing-view.entity';
 import { Favorite } from '../entities/favorite.entity';
 import { Rating } from '../entities/rating.entity';
 import { ContactRequest } from '../entities/contact-request.entity';
-import { ROLES } from '../../../shared/security';
+import { hasPermission, PERMISSIONS } from '../../../shared/security';
 import type { IUser } from '../../../shared';
 import type { ListingStatsResponseDto } from '../dto/response/listing-stats-response.dto';
 
@@ -31,9 +31,8 @@ export class GetListingStatsUseCase {
       throw new NotFoundException('Listing not found');
     }
 
-    const isPrivileged = user.role === ROLES.ADMIN || user.role === ROLES.OWNER;
     const isOwner = listing.userId === user.id;
-    if (!isPrivileged && !isOwner) {
+    if (!hasPermission(user, PERMISSIONS.LISTINGS_STATS_READ_ANY) && !isOwner) {
       throw new NotFoundException('Listing not found');
     }
 
@@ -56,7 +55,7 @@ export class GetListingStatsUseCase {
           .getCount(),
         this.listingViewRepository
           .createQueryBuilder('v')
-          .select('COUNT(DISTINCT COALESCE(v.userId::text, v.ipAddress))', 'count')
+          .select('COUNT(DISTINCT COALESCE(v."userId"::text, v."ipAddress"))', 'count')
           .where('v.listingId = :listingId', { listingId })
           .getRawOne<{ count: string }>(),
         this.favoriteRepository.count({ where: { listingId } }),

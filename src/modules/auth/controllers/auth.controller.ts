@@ -2,6 +2,7 @@ import { Controller, Post, Body, UseGuards, HttpCode, HttpStatus } from '@nestjs
 import { Throttle } from '@nestjs/throttler';
 import { LoginUseCase } from '../use-cases/login.use-case';
 import { RegisterUseCase } from '../use-cases/register.use-case';
+import { SetupUseCase } from '../use-cases/setup.use-case';
 import { RefreshAccessTokenUseCase } from '../use-cases/refresh-access-token.use-case';
 import { LogoutUseCase } from '../use-cases/logout.use-case';
 import { RequestPasswordResetUseCase } from '../use-cases/request-password-reset.use-case';
@@ -21,6 +22,7 @@ export class AuthController {
   constructor(
     private readonly loginUseCase: LoginUseCase,
     private readonly registerUseCase: RegisterUseCase,
+    private readonly setupUseCase: SetupUseCase,
     private readonly refreshAccessTokenUseCase: RefreshAccessTokenUseCase,
     private readonly logoutUseCase: LogoutUseCase,
     private readonly requestPasswordResetUseCase: RequestPasswordResetUseCase,
@@ -43,6 +45,15 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() request: RegisterRequestDto): Promise<AuthResponseDto> {
     const result = await this.registerUseCase.execute(request);
+    return new AuthResponseDto(result);
+  }
+
+  @Public()
+  @Throttle({ default: { ttl: 60000, limit: 3 } })
+  @Post('setup')
+  @HttpCode(HttpStatus.CREATED)
+  async setup(@Body() request: RegisterRequestDto): Promise<AuthResponseDto> {
+    const result = await this.setupUseCase.execute(request);
     return new AuthResponseDto(result);
   }
 

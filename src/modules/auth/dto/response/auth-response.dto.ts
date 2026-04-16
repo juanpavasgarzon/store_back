@@ -17,11 +17,13 @@ export class UserResponseDto implements IUserResponse {
   email: string;
   name: string;
   role: string;
+  permissions: string[];
 
   constructor(data: IUserResponse) {
     this.id = data.id;
     this.email = data.email;
     this.name = data.name;
     this.role = data.role;
+    this.permissions = data.permissions;
   }
 }

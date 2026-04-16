@@ -6,6 +6,7 @@ import { RefreshToken } from '../entities/refresh-token.entity';
 import { AuthService } from '../services/auth.service';
 import { CreateRefreshTokenUseCase } from './create-refresh-token.use-case';
 import type { IAuthResponse } from '../dto/response/auth-response.interface';
+import { ROLE_PERMISSIONS } from 'src/shared';
 
 @Injectable()
 export class RefreshAccessTokenUseCase {
@@ -46,6 +47,7 @@ export class RefreshAccessTokenUseCase {
       email: user.email,
       name: user.name,
       role: user.role,
+      permissions: ROLE_PERMISSIONS[user.role] ?? [],
     };
 
     const payload = this.authService.buildPayload(iUser);

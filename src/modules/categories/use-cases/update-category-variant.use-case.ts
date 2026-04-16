@@ -36,6 +36,9 @@ export class UpdateCategoryVariantUseCase {
     if (dto.valueType != null) {
       variant.valueType = dto.valueType;
     }
+    if (dto.options != null) {
+      variant.options = dto.options;
+    }
     return this.categoryVariantRepository.save(variant);
   }
 }

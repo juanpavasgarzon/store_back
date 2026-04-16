@@ -1,6 +1,7 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { UploadListingPhotosUseCase } from './upload-listing-photos.use-case';
 import type { UploadFileInput } from '../../../shared/files';
+import type { IUser } from '../../../shared';
 
 const fakeFile = (name = 'photo.jpg'): UploadFileInput => ({
   fieldname: 'photos',
@@ -10,6 +11,13 @@ const fakeFile = (name = 'photo.jpg'): UploadFileInput => ({
   buffer: Buffer.from('fake-image-data'),
   size: 1024,
 });
+
+const fakeUser: IUser = {
+  id: 'user-1',
+  email: 'user@test.com',
+  name: 'Test User',
+  role: 'owner',
+};
 
 describe('UploadListingPhotosUseCase', () => {
   let useCase: UploadListingPhotosUseCase;
@@ -30,11 +38,13 @@ describe('UploadListingPhotosUseCase', () => {
   });
 
   it('throws BadRequestException when no files are provided', async () => {
-    await expect(useCase.execute('listing-1', [])).rejects.toThrow(BadRequestException);
+    await expect(useCase.execute('listing-1', fakeUser, [])).rejects.toThrow(BadRequestException);
   });
 
   it('throws NotFoundException when listing does not exist', async () => {
     listingRepository.findOne.mockResolvedValue(null);
-    await expect(useCase.execute('listing-1', [fakeFile()])).rejects.toThrow(NotFoundException);
+    await expect(useCase.execute('listing-1', fakeUser, [fakeFile()])).rejects.toThrow(
+      NotFoundException,
+    );
   });
 });

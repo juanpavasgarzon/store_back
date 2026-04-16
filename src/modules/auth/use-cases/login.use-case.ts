@@ -3,6 +3,7 @@ import { AuthService } from '../services/auth.service';
 import { CreateRefreshTokenUseCase } from './create-refresh-token.use-case';
 import type { IAuthResponse, IUserResponse } from '../dto/response/auth-response.interface';
 import type { IUser } from '../../../shared';
+import { ROLE_PERMISSIONS } from '../../../shared/security/constants/role-permissions';
 
 @Injectable()
 export class LoginUseCase {
@@ -28,6 +29,7 @@ export class LoginUseCase {
       email: user.email,
       name: user.name,
       role: user.role,
+      permissions: ROLE_PERMISSIONS[user.role] ?? [],
     };
   }
 }

@@ -12,8 +12,9 @@ import {
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { Throttle } from '@nestjs/throttler';
 import { memoryStorage } from 'multer';
-import { Public, RequirePermissions } from '../../../shared';
+import { CurrentUser, Public, RequirePermissions } from '../../../shared';
 import { PERMISSIONS } from '../../../shared/security';
+import type { IUser } from '../../../shared';
 import { UploadListingPhotosUseCase } from '../use-cases/upload-listing-photos.use-case';
 import { ListListingPhotosUseCase } from '../use-cases/list-listing-photos.use-case';
 import { GetListingPhotoFileUseCase } from '../use-cases/get-listing-photo-file.use-case';
@@ -39,6 +40,7 @@ export class ListingPhotoController {
   )
   async upload(
     @Param('listingId') listingId: string,
+    @CurrentUser() user: IUser,
     @UploadedFiles() files: Express.Multer.File[],
   ): Promise<ListingPhotoResponseDto[]> {
     const inputs = (files ?? []).map((f) => ({
@@ -46,7 +48,7 @@ export class ListingPhotoController {
       mimetype: f.mimetype,
       size: f.size,
     }));
-    const photos = await this.uploadListingPhotosUseCase.execute(listingId, inputs);
+    const photos = await this.uploadListingPhotosUseCase.execute(listingId, user, inputs);
     return photos.map((p) => new ListingPhotoResponseDto(p));
   }
 

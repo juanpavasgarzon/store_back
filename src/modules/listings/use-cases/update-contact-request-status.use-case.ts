@@ -5,7 +5,7 @@ import { ContactRequest } from '../entities/contact-request.entity';
 import { Listing } from '../entities/listing.entity';
 import { CONTACT_REQUEST_STATUS } from '../constants/contact-request-status.constants';
 import type { ContactRequestStatus } from '../constants/contact-request-status.constants';
-import { ROLES } from '../../../shared/security';
+import { hasPermission, PERMISSIONS } from '../../../shared/security';
 import type { IUser } from '../../../shared';
 
 @Injectable()
@@ -23,8 +23,7 @@ export class UpdateContactRequestStatusUseCase {
       throw new NotFoundException('Contact request not found');
     }
 
-    const isPrivileged = user.role === ROLES.ADMIN || user.role === ROLES.OWNER;
-    if (!isPrivileged) {
+    if (!hasPermission(user, PERMISSIONS.CONTACT_REQUESTS_MANAGE_ANY)) {
       const listing = await this.listingRepository.findOne({ where: { id: request.listingId } });
       if (!listing || listing.userId !== user.id) {
         throw new ForbiddenException('You do not have permission to update this contact request');

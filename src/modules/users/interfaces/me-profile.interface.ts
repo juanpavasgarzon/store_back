@@ -3,4 +3,5 @@ export interface MeProfileShape {
   email: string;
   name: string;
   role: string;
+  permissions: string[];
 }

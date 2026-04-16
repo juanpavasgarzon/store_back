@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Listing } from '../entities/listing.entity';
 import { ListingPriceHistory } from '../entities/listing-price-history.entity';
-import { ROLES } from '../../../shared/security';
+import { hasPermission, PERMISSIONS } from '../../../shared/security';
 import type { IUser } from '../../../shared';
 
 @Injectable()
@@ -21,9 +21,8 @@ export class GetListingPriceHistoryUseCase {
       throw new NotFoundException('Listing not found');
     }
 
-    const isPrivileged = user.role === ROLES.ADMIN || user.role === ROLES.OWNER;
     const isOwner = listing.userId === user.id;
-    if (!isPrivileged && !isOwner) {
+    if (!hasPermission(user, PERMISSIONS.LISTINGS_STATS_READ_ANY) && !isOwner) {
       throw new NotFoundException('Listing not found');
     }
 

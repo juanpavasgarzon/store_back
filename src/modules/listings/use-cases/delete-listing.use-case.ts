@@ -6,7 +6,7 @@ import type { Cache } from 'cache-manager';
 import { Listing } from '../entities/listing.entity';
 import { AuditService } from '../../audit/audit.service';
 import { AUDIT_ACTION } from '../../audit/constants/audit-action.constants';
-import { ROLES } from '../../../shared/security';
+import { hasPermission, PERMISSIONS } from '../../../shared/security';
 import type { IUser } from '../../../shared';
 
 @Injectable()
@@ -23,8 +23,7 @@ export class DeleteListingUseCase {
     if (!listing) {
       throw new NotFoundException('Listing not found');
     }
-    const isPrivileged = user.role === ROLES.ADMIN || user.role === ROLES.OWNER;
-    if (!isPrivileged && listing.userId !== user.id) {
+    if (!hasPermission(user, PERMISSIONS.LISTINGS_MANAGE_ANY) && listing.userId !== user.id) {
       throw new NotFoundException('Listing not found');
     }
     await this.listingRepository.softDelete(id);

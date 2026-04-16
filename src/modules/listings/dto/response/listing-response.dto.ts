@@ -1,5 +1,8 @@
 import type { Listing } from '../../entities/listing.entity';
-import type { ListingResponseShape } from '../../interfaces/listing-response.interface';
+import type {
+  ListingResponseShape,
+  ListingUserContext,
+} from '../../interfaces/listing-response.interface';
 
 export class ListingResponseDto implements ListingResponseShape {
   id: string;
@@ -17,12 +20,16 @@ export class ListingResponseDto implements ListingResponseShape {
   status: string;
   expiresAt: Date | null;
   isActive: boolean;
+  isBoosted: boolean;
+  boostedUntil: Date | null;
+  isFavorited: boolean | null;
+  myRating: number | null;
   createdAt: Date;
   updatedAt: Date;
   photos?: ListingResponseShape['photos'];
   variants?: ListingResponseShape['variants'];
 
-  constructor(listing: Listing) {
+  constructor(listing: Listing, context?: ListingUserContext) {
     this.id = listing.id;
     this.code = listing.code;
     this.userId = listing.userId;
@@ -42,6 +49,10 @@ export class ListingResponseDto implements ListingResponseShape {
     this.status = listing.status;
     this.expiresAt = listing.expiresAt ?? null;
     this.isActive = listing.isActive ?? true;
+    this.isBoosted = listing.isBoosted ?? false;
+    this.boostedUntil = listing.boostedUntil ?? null;
+    this.isFavorited = context?.isFavorited ?? null;
+    this.myRating = context?.myRating ?? null;
     this.createdAt = listing.createdAt;
     this.updatedAt = listing.updatedAt;
     this.photos = listing.photos?.map((p) => ({

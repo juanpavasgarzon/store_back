@@ -9,4 +9,5 @@ export interface IUserResponse {
   email: string;
   name: string;
   role: string;
+  permissions: string[];
 }

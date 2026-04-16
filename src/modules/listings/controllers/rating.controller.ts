@@ -4,6 +4,7 @@ import { PERMISSIONS } from '../../../shared/security';
 import type { IUser } from '../../../shared';
 import { SetRatingUseCase } from '../use-cases/set-rating.use-case';
 import { GetListingRatingUseCase } from '../use-cases/get-listing-rating.use-case';
+import { GetMyRatingForListingUseCase } from '../use-cases/get-my-rating-for-listing.use-case';
 import { ListListingRatingsUseCase } from '../use-cases/list-listing-ratings.use-case';
 import { CreateRatingRequestDto } from '../dto/request/create-rating.dto';
 import { RatingResponseDto } from '../dto/response/rating-response.dto';
@@ -19,6 +20,7 @@ export class RatingController {
   constructor(
     private readonly setRatingUseCase: SetRatingUseCase,
     private readonly getListingRatingUseCase: GetListingRatingUseCase,
+    private readonly getMyRatingForListingUseCase: GetMyRatingForListingUseCase,
     private readonly listListingRatingsUseCase: ListListingRatingsUseCase,
   ) {}
 
@@ -30,6 +32,17 @@ export class RatingController {
   ): Promise<ListingRatingSummaryResponseDto> {
     const result = await this.getListingRatingUseCase.execute(listingId);
     return new ListingRatingSummaryResponseDto(result.avg, result.count);
+  }
+
+  @RequirePermissions(PERMISSIONS.RATINGS_CREATE)
+  @Get('me')
+  @HttpCode(HttpStatus.OK)
+  async getMyRating(
+    @Param('listingId') listingId: string,
+    @CurrentUser() user: IUser,
+  ): Promise<{ score: number } | null> {
+    const rating = await this.getMyRatingForListingUseCase.execute(listingId, user.id);
+    return rating ? { score: rating.score } : null;
   }
 
   @Public()

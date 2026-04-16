@@ -12,7 +12,7 @@ import type { Cache } from 'cache-manager';
 import { Listing } from '../entities/listing.entity';
 import { AuditService } from '../../audit/audit.service';
 import { AUDIT_ACTION } from '../../audit/constants/audit-action.constants';
-import { ROLES } from '../../../shared/security';
+import { hasPermission, PERMISSIONS } from '../../../shared/security';
 import type { IUser } from '../../../shared';
 import type { BoostListingRequestDto } from '../dto/request/boost-listing.dto';
 
@@ -30,8 +30,7 @@ export class BoostListingUseCase {
     if (!listing) {
       throw new NotFoundException('Listing not found');
     }
-    const isPrivileged = actor.role === ROLES.ADMIN || actor.role === ROLES.OWNER;
-    if (!isPrivileged && listing.userId !== actor.id) {
+    if (!hasPermission(actor, PERMISSIONS.LISTINGS_MANAGE_ANY) && listing.userId !== actor.id) {
       throw new ForbiddenException('You do not have permission to boost this listing');
     }
     const expiresAt = new Date(dto.expiresAt);

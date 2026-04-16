@@ -14,6 +14,8 @@ import { ChangePasswordUseCase } from '../use-cases/change-password.use-case';
 import { UpdateProfileRequestDto } from '../dto/request/update-profile.dto';
 import { ChangePasswordRequestDto } from '../dto/request/change-password.dto';
 import { FavoriteResponseDto } from '../../listings/dto/response/favorite-response.dto';
+import { RatingResponseDto } from '../../listings/dto/response/rating-response.dto';
+import { RatingService } from '../../listings/services/rating.service';
 import { ContactRequestResponseDto } from '../../listings/dto/response/contact-request-response.dto';
 import { AppointmentResponseDto } from '../../listings/dto/response/appointment-response.dto';
 import { ListingResponseDto } from '../../listings/dto/response/listing-response.dto';
@@ -28,6 +30,7 @@ export class MeController {
   constructor(
     private readonly getProfileUseCase: GetProfileUseCase,
     private readonly favoriteService: FavoriteService,
+    private readonly ratingService: RatingService,
     private readonly contactRequestService: ContactRequestService,
     private readonly appointmentService: AppointmentService,
     private readonly listMyListingsUseCase: ListMyListingsUseCase,
@@ -53,6 +56,20 @@ export class MeController {
     const result = await this.favoriteService.listMyFavorites(user, query);
     return new PaginationResponse(
       result.data.map((f) => new FavoriteResponseDto(f)),
+      result.meta,
+    );
+  }
+
+  @RequirePermissions(PERMISSIONS.USERS_ME_READ)
+  @Get('ratings')
+  @HttpCode(HttpStatus.OK)
+  async listMyRatings(
+    @CurrentUser() user: IUser,
+    @Query(ParsePaginationQueryPipe) query: PaginationRequest,
+  ): Promise<PaginationResponse<RatingResponseDto>> {
+    const result = await this.ratingService.listMyRatings(user, query);
+    return new PaginationResponse(
+      result.data.map((r) => new RatingResponseDto(r)),
       result.meta,
     );
   }
