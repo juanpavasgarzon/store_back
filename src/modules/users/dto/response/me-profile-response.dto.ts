@@ -8,7 +8,6 @@ export class MeProfileResponseDto {
   role: string;
   permissions: string[];
   phone: string | null;
-  whatsapp: string | null;
   city: string | null;
 
   constructor(data: {
@@ -18,7 +17,6 @@ export class MeProfileResponseDto {
     role: string;
     permissions?: string[];
     phone?: string | null;
-    whatsapp?: string | null;
     city?: string | null;
   }) {
     this.id = data.id;
@@ -27,7 +25,6 @@ export class MeProfileResponseDto {
     this.role = data.role;
     this.permissions = data.permissions ?? ROLE_PERMISSIONS[data.role as Role] ?? [];
     this.phone = data.phone ?? null;
-    this.whatsapp = data.whatsapp ?? null;
     this.city = data.city ?? null;
   }
 }

@@ -45,7 +45,6 @@ export class ListingResponseDto implements ListingResponseShape {
         id: listing.user.id,
         name: listing.user.name,
         phone: listing.user.phone ?? null,
-        whatsapp: listing.user.whatsapp ?? null,
         city: listing.user.city ?? null,
       };
     }

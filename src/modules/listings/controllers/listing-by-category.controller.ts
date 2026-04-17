@@ -18,8 +18,15 @@ export class ListingByCategoryController {
   async list(
     @Param('categoryId') categoryId: string,
     @Query(ParsePaginationQueryPipe) query: PaginationRequest,
+    @Query('minPrice') rawMinPrice?: string,
+    @Query('maxPrice') rawMaxPrice?: string,
   ): Promise<PaginationResponse<ListingResponseDto>> {
-    const result = await this.listListingsByCategoryUseCase.execute(categoryId, query);
+    const minPrice = rawMinPrice != null && rawMinPrice !== '' ? Number(rawMinPrice) : undefined;
+    const maxPrice = rawMaxPrice != null && rawMaxPrice !== '' ? Number(rawMaxPrice) : undefined;
+    const result = await this.listListingsByCategoryUseCase.execute(categoryId, query, {
+      minPrice,
+      maxPrice,
+    });
     return new PaginationResponse(
       result.data.map((l) => new ListingResponseDto(l)),
       result.meta,

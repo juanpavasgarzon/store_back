@@ -14,12 +14,6 @@ export class UpdateProfileRequestDto {
 
   @IsOptional()
   @IsString()
-  @MaxLength(20)
-  @Matches(/^\+?[0-9\s\-()]{7,20}$/, { message: 'Invalid whatsapp number' })
-  whatsapp?: string;
-
-  @IsOptional()
-  @IsString()
   @MaxLength(80)
   city?: string;
 }

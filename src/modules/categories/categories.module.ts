@@ -18,6 +18,7 @@ import { CreateCategoryAttributeUseCase } from './use-cases/create-category-attr
 import { UpdateCategoryAttributeUseCase } from './use-cases/update-category-attribute.use-case';
 import { DeleteCategoryAttributeUseCase } from './use-cases/delete-category-attribute.use-case';
 import { FindCategoryAttributesByCategoryIdUseCase } from './use-cases/find-category-attributes-by-category-id.use-case';
+import { SearchCategoriesByTermUseCase } from './use-cases/search-categories-by-term.use-case';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Category, CategoryAttribute])],
@@ -37,6 +38,7 @@ import { FindCategoryAttributesByCategoryIdUseCase } from './use-cases/find-cate
     UpdateCategoryAttributeUseCase,
     DeleteCategoryAttributeUseCase,
     FindCategoryAttributesByCategoryIdUseCase,
+    SearchCategoriesByTermUseCase,
   ],
   exports: [CategoryService],
 })

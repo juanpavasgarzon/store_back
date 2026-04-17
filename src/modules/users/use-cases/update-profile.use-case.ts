@@ -21,9 +21,6 @@ export class UpdateProfileUseCase {
     if (dto.phone !== undefined) {
       user.phone = dto.phone ?? null;
     }
-    if (dto.whatsapp !== undefined) {
-      user.whatsapp = dto.whatsapp ?? null;
-    }
     if (dto.city !== undefined) {
       user.city = dto.city ?? null;
     }

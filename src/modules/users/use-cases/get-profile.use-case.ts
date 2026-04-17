@@ -1,11 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../entities/user.entity';
 import type { IUser } from '../../../shared';
-import type { MeProfileShape } from '../interfaces/me-profile.interface';
 import { ROLE_PERMISSIONS } from '../../../shared/security/constants/role-permissions';
-import type { Role } from '../../../shared/security/interfaces/role.interface';
+import { User } from '../entities/user.entity';
+import type { MeProfileShape } from '../interfaces/me-profile.interface';
 
 @Injectable()
 export class GetProfileUseCase {
@@ -24,9 +23,8 @@ export class GetProfileUseCase {
       email: found.email,
       name: found.name,
       role: found.role,
-      permissions: ROLE_PERMISSIONS[found.role as Role] ?? [],
+      permissions: ROLE_PERMISSIONS[found.role] ?? [],
       phone: found.phone,
-      whatsapp: found.whatsapp,
       city: found.city,
     };
   }

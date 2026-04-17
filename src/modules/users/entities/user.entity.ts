@@ -26,9 +26,6 @@ export class User {
   @Column({ type: 'varchar', length: 20, nullable: true })
   phone!: string | null;
 
-  @Column({ type: 'varchar', length: 20, nullable: true })
-  whatsapp!: string | null;
-
   @Column({ type: 'varchar', length: 80, nullable: true })
   city!: string | null;
 

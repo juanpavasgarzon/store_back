@@ -15,7 +15,6 @@ export interface ListingSellerResponse {
   id: string;
   name: string;
   phone: string | null;
-  whatsapp: string | null;
   city: string | null;
 }
 

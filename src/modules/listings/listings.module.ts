@@ -49,6 +49,7 @@ import { RegisterListingViewUseCase } from './use-cases/register-listing-view.us
 import { GetListingStatsUseCase } from './use-cases/get-listing-stats.use-case';
 import { ExportListingsCsvUseCase } from './use-cases/export-listings-csv.use-case';
 import { ListTrendingListingsUseCase } from './use-cases/list-trending-listings.use-case';
+import { SearchListingsByTermUseCase } from './use-cases/search-listings-by-term.use-case';
 import { CategoriesModule } from '../categories/categories.module';
 import { Category } from '../categories/entities/category.entity';
 import { User } from '../users/entities/user.entity';
@@ -117,6 +118,7 @@ import { AuditModule } from '../audit/audit.module';
     GetListingStatsUseCase,
     ExportListingsCsvUseCase,
     ListTrendingListingsUseCase,
+    SearchListingsByTermUseCase,
   ],
   exports: [FavoriteService, ContactRequestService, ListingService],
 })
