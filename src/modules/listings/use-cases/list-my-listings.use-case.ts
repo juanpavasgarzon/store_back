@@ -22,8 +22,6 @@ export class ListMyListingsUseCase {
       .createQueryBuilder('l')
       .leftJoinAndSelect('l.category', 'c')
       .leftJoinAndSelect('l.photos', 'p')
-      .leftJoinAndSelect('l.variants', 'lv')
-      .leftJoinAndSelect('lv.categoryVariant', 'cv')
       .where('l.userId = :userId', { userId: user.id });
 
     return paginate<Listing>(qb, query, {

@@ -23,6 +23,15 @@ export class User {
   @Column({ length: 120 })
   name!: string;
 
+  @Column({ type: 'varchar', length: 20, nullable: true })
+  phone!: string | null;
+
+  @Column({ type: 'varchar', length: 20, nullable: true })
+  whatsapp!: string | null;
+
+  @Column({ type: 'varchar', length: 80, nullable: true })
+  city!: string | null;
+
   @Column({ type: 'varchar', length: 20, default: ROLES.USER })
   role!: Role;
 

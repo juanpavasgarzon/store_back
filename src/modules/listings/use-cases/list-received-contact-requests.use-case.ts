@@ -11,7 +11,7 @@ import {
 } from '../../../shared/pagination';
 
 @Injectable()
-export class ListMyContactRequestsUseCase {
+export class ListReceivedContactRequestsUseCase {
   constructor(
     @InjectRepository(ContactRequest)
     private readonly contactRequestRepository: Repository<ContactRequest>,
@@ -20,9 +20,9 @@ export class ListMyContactRequestsUseCase {
   async execute(user: IUser, query: PaginationQuery): Promise<PaginationResult<ContactRequest>> {
     const qb = this.contactRequestRepository
       .createQueryBuilder('cr')
-      .leftJoinAndSelect('cr.listing', 'l')
-      .leftJoinAndSelect('cr.user', 'u')
-      .where('cr.userId = :userId', { userId: user.id });
+      .leftJoinAndSelect('cr.listing', 'listing')
+      .leftJoinAndSelect('cr.user', 'requester')
+      .where('listing.userId = :userId', { userId: user.id });
 
     return paginate<ContactRequest>(qb, query, {
       defaultSort: [{ field: 'createdAt', order: SortOrder.DESC }],

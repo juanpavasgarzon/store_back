@@ -19,8 +19,9 @@ export class ListPublicCategoriesUseCase {
   async execute(query: PaginationQuery): Promise<PaginationResult<Category>> {
     const qb = this.categoryRepository
       .createQueryBuilder('c')
-      .leftJoinAndSelect('c.variants', 'v')
-      .where('c.isActive = true');
+      .leftJoinAndSelect('c.attributes', 'attributes')
+      .where('c.isActive = true')
+      .orderBy('attributes.name', 'ASC');
 
     return paginate<Category>(qb, query, {
       defaultSort: [{ field: 'name', order: SortOrder.ASC }],

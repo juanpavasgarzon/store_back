@@ -1,4 +1,5 @@
 import type { Category } from '../../entities/category.entity';
+import { CategoryAttributeResponse } from './category-attribute-response.dto';
 
 export class CategoryResponse {
   id: string;
@@ -8,6 +9,7 @@ export class CategoryResponse {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  attributes: CategoryAttributeResponse[];
 
   constructor(category: Category) {
     this.id = category.id;
@@ -17,5 +19,8 @@ export class CategoryResponse {
     this.isActive = category.isActive;
     this.createdAt = category.createdAt;
     this.updatedAt = category.updatedAt;
+    this.attributes = (category.attributes ?? [])
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((attribute) => new CategoryAttributeResponse(attribute));
   }
 }

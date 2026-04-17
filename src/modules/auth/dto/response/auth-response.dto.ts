@@ -1,18 +1,6 @@
 import type { IAuthResponse, IUserResponse } from './auth-response.interface';
 
-export class AuthResponseDto implements IAuthResponse {
-  accessToken: string;
-  refreshToken: string;
-  user: UserResponseDto;
-
-  constructor(data: IAuthResponse) {
-    this.accessToken = data.accessToken;
-    this.refreshToken = data.refreshToken;
-    this.user = new UserResponseDto(data.user);
-  }
-}
-
-export class UserResponseDto implements IUserResponse {
+export class AuthUserResponse implements IUserResponse {
   id: string;
   email: string;
   name: string;
@@ -25,5 +13,17 @@ export class UserResponseDto implements IUserResponse {
     this.name = data.name;
     this.role = data.role;
     this.permissions = data.permissions;
+  }
+}
+
+export class AuthResponseDto implements IAuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  user: AuthUserResponse;
+
+  constructor(data: IAuthResponse) {
+    this.accessToken = data.accessToken;
+    this.refreshToken = data.refreshToken;
+    this.user = new AuthUserResponse(data.user);
   }
 }

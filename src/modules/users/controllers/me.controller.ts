@@ -7,17 +7,13 @@ import { GetProfileUseCase } from '../use-cases/get-profile.use-case';
 import { MeProfileResponseDto } from '../dto/response/me-profile-response.dto';
 import { FavoriteService } from '../../listings/services/favorite.service';
 import { ContactRequestService } from '../../listings/services/contact-request.service';
-import { AppointmentService } from '../../listings/services/appointment.service';
-import { ListMyListingsUseCase } from '../../listings/use-cases/list-my-listings.use-case';
+import { ListingService } from '../../listings/services/listing.service';
 import { UpdateProfileUseCase } from '../use-cases/update-profile.use-case';
 import { ChangePasswordUseCase } from '../use-cases/change-password.use-case';
 import { UpdateProfileRequestDto } from '../dto/request/update-profile.dto';
 import { ChangePasswordRequestDto } from '../dto/request/change-password.dto';
 import { FavoriteResponseDto } from '../../listings/dto/response/favorite-response.dto';
-import { RatingResponseDto } from '../../listings/dto/response/rating-response.dto';
-import { RatingService } from '../../listings/services/rating.service';
 import { ContactRequestResponseDto } from '../../listings/dto/response/contact-request-response.dto';
-import { AppointmentResponseDto } from '../../listings/dto/response/appointment-response.dto';
 import { ListingResponseDto } from '../../listings/dto/response/listing-response.dto';
 import {
   PaginationResponse,
@@ -30,10 +26,8 @@ export class MeController {
   constructor(
     private readonly getProfileUseCase: GetProfileUseCase,
     private readonly favoriteService: FavoriteService,
-    private readonly ratingService: RatingService,
     private readonly contactRequestService: ContactRequestService,
-    private readonly appointmentService: AppointmentService,
-    private readonly listMyListingsUseCase: ListMyListingsUseCase,
+    private readonly listingService: ListingService,
     private readonly updateProfileUseCase: UpdateProfileUseCase,
     private readonly changePasswordUseCase: ChangePasswordUseCase,
   ) {}
@@ -41,8 +35,8 @@ export class MeController {
   @RequirePermissions(PERMISSIONS.USERS_ME_READ)
   @Get('profile')
   @HttpCode(HttpStatus.OK)
-  getProfile(@CurrentUser() user: IUser): MeProfileResponseDto {
-    const result = this.getProfileUseCase.execute(user);
+  async getProfile(@CurrentUser() user: IUser): Promise<MeProfileResponseDto> {
+    const result = await this.getProfileUseCase.execute(user);
     return new MeProfileResponseDto(result);
   }
 
@@ -56,20 +50,6 @@ export class MeController {
     const result = await this.favoriteService.listMyFavorites(user, query);
     return new PaginationResponse(
       result.data.map((f) => new FavoriteResponseDto(f)),
-      result.meta,
-    );
-  }
-
-  @RequirePermissions(PERMISSIONS.USERS_ME_READ)
-  @Get('ratings')
-  @HttpCode(HttpStatus.OK)
-  async listMyRatings(
-    @CurrentUser() user: IUser,
-    @Query(ParsePaginationQueryPipe) query: PaginationRequest,
-  ): Promise<PaginationResponse<RatingResponseDto>> {
-    const result = await this.ratingService.listMyRatings(user, query);
-    return new PaginationResponse(
-      result.data.map((r) => new RatingResponseDto(r)),
       result.meta,
     );
   }
@@ -89,15 +69,15 @@ export class MeController {
   }
 
   @RequirePermissions(PERMISSIONS.USERS_ME_READ)
-  @Get('appointments')
+  @Get('received-contact-requests')
   @HttpCode(HttpStatus.OK)
-  async listMyAppointments(
+  async listReceivedContactRequests(
     @CurrentUser() user: IUser,
     @Query(ParsePaginationQueryPipe) query: PaginationRequest,
-  ): Promise<PaginationResponse<AppointmentResponseDto>> {
-    const result = await this.appointmentService.listMyAppointments(user, query);
+  ): Promise<PaginationResponse<ContactRequestResponseDto>> {
+    const result = await this.contactRequestService.listReceivedContactRequests(user, query);
     return new PaginationResponse(
-      result.data.map((a) => new AppointmentResponseDto(a)),
+      result.data.map((r) => new ContactRequestResponseDto(r)),
       result.meta,
     );
   }
@@ -131,7 +111,7 @@ export class MeController {
     @CurrentUser() user: IUser,
     @Query(ParsePaginationQueryPipe) query: PaginationRequest,
   ): Promise<PaginationResponse<ListingResponseDto>> {
-    const result = await this.listMyListingsUseCase.execute(user, query);
+    const result = await this.listingService.listMyListings(user, query);
     return new PaginationResponse(
       result.data.map((l) => new ListingResponseDto(l)),
       result.meta,

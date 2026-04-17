@@ -2,47 +2,47 @@ import {
   IsString,
   IsOptional,
   IsNumber,
-  IsArray,
   IsDateString,
   IsIn,
-  ValidateNested,
   Min,
   Max,
   MaxLength,
   MinLength,
   IsUUID,
+  IsArray,
+  ValidateNested,
 } from 'class-validator';
 import { LISTING_STATUS, type ListingStatus } from '../../constants/listing-status.constants';
 import { Type } from 'class-transformer';
 
-export class ListingVariantValueDto {
+export class AttributeValueInput {
   @IsUUID()
-  categoryVariantId: string;
+  attributeId!: string;
 
   @IsString()
-  value: string;
+  value!: string;
 }
 
 export class CreateListingRequestDto {
   @IsUUID()
-  categoryId: string;
+  categoryId!: string;
 
   @IsString()
   @MaxLength(255)
-  title: string;
+  title!: string;
 
   @IsString()
   @MinLength(10)
   @MaxLength(5000)
-  description: string;
+  description!: string;
 
   @IsNumber()
   @Min(0)
-  price: number;
+  price!: number;
 
   @IsString()
   @MaxLength(120)
-  location: string;
+  location!: string;
 
   @IsOptional()
   @IsString()
@@ -74,6 +74,6 @@ export class CreateListingRequestDto {
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => ListingVariantValueDto)
-  variants?: ListingVariantValueDto[];
+  @Type(() => AttributeValueInput)
+  attributeValues?: AttributeValueInput[];
 }

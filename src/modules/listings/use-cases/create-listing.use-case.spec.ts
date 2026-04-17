@@ -24,33 +24,23 @@ const dto: CreateListingRequestDto = {
   longitude: null,
   status: LISTING_STATUS.ACTIVE,
   expiresAt: null,
-  variants: [],
 };
 
 describe('CreateListingUseCase', () => {
   let useCase: CreateListingUseCase;
-  let listingRepository: jest.Mocked<{ create: jest.Fn; findOne: jest.Fn }>;
-  let listingVariantValueRepository: jest.Mocked<{ create: jest.Fn }>;
+  let listingRepository: jest.Mocked<{ create: jest.Fn; save: jest.Fn; findOne: jest.Fn }>;
   let categoryService: jest.Mocked<{ findById: jest.Fn }>;
-  let findCategoryVariantsByIdsUseCase: jest.Mocked<{ execute: jest.Fn }>;
   let listingCodeService: jest.Mocked<{ generateUniqueCode: jest.Fn }>;
-  let dataSource: jest.Mocked<{ transaction: jest.Fn }>;
 
   beforeEach(() => {
-    listingRepository = { create: jest.fn(), findOne: jest.fn() } as never;
-    listingVariantValueRepository = { create: jest.fn() } as never;
+    listingRepository = { create: jest.fn(), save: jest.fn(), findOne: jest.fn() } as never;
     categoryService = { findById: jest.fn() } as never;
-    findCategoryVariantsByIdsUseCase = { execute: jest.fn() } as never;
     listingCodeService = { generateUniqueCode: jest.fn() } as never;
-    dataSource = { transaction: jest.fn() } as never;
 
     useCase = new CreateListingUseCase(
       listingRepository as never,
-      listingVariantValueRepository as never,
       categoryService as never,
-      findCategoryVariantsByIdsUseCase as never,
       listingCodeService as never,
-      dataSource as never,
     );
   });
 
@@ -64,23 +54,13 @@ describe('CreateListingUseCase', () => {
     const savedListing = { id: savedId, ...dto, code: 'ABC123', userId: mockUser.id };
 
     categoryService.findById.mockResolvedValue(mockCategory);
-    findCategoryVariantsByIdsUseCase.execute.mockResolvedValue([]);
     listingCodeService.generateUniqueCode.mockResolvedValue('ABC123');
-
-    dataSource.transaction.mockImplementation(async (fn: (m: unknown) => Promise<string>) => {
-      const manager = {
-        create: jest.fn().mockReturnValue({ id: savedId }),
-        save: jest.fn().mockResolvedValue({ id: savedId }),
-        delete: jest.fn(),
-      };
-      return fn(manager);
-    });
-
+    listingRepository.create.mockReturnValue({ id: savedId });
+    listingRepository.save.mockResolvedValue({ id: savedId });
     listingRepository.findOne.mockResolvedValue({
       ...savedListing,
       category: mockCategory,
       photos: [],
-      variants: [],
     });
 
     const result = await useCase.execute(mockUser, dto);
@@ -98,34 +78,23 @@ describe('CreateListingUseCase', () => {
     };
 
     categoryService.findById.mockResolvedValue(mockCategory);
-    findCategoryVariantsByIdsUseCase.execute.mockResolvedValue([]);
     listingCodeService.generateUniqueCode.mockResolvedValue('XYZ999');
 
     let capturedTitle = '';
     let capturedDescription = '';
 
-    dataSource.transaction.mockImplementation(async (fn: (m: unknown) => Promise<string>) => {
-      const manager = {
-        create: jest
-          .fn()
-          .mockImplementation((_entity: unknown, data: { title: string; description: string }) => {
-            capturedTitle = data.title;
-            capturedDescription = data.description;
-            return { id: 'listing-2' };
-          }),
-        save: jest.fn().mockResolvedValue({ id: 'listing-2' }),
-        delete: jest.fn(),
-      };
-      return fn(manager);
+    listingRepository.create.mockImplementation((_data: { title: string; description: string }) => {
+      capturedTitle = _data.title;
+      capturedDescription = _data.description;
+      return { id: 'listing-2' };
     });
-
+    listingRepository.save.mockResolvedValue({ id: 'listing-2' });
     listingRepository.findOne.mockResolvedValue({
       id: 'listing-2',
       title: capturedTitle,
       description: capturedDescription,
       category: mockCategory,
       photos: [],
-      variants: [],
       userId: mockUser.id,
     });
 

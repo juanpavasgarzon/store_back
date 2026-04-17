@@ -13,7 +13,8 @@ export class FindCategoryByIdUseCase {
   async execute(id: string): Promise<Category | null> {
     return this.categoryRepository.findOne({
       where: { id },
-      relations: ['variants'],
+      relations: ['attributes'],
+      order: { attributes: { name: 'ASC' } },
     });
   }
 }

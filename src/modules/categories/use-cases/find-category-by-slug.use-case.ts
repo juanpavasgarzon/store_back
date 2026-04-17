@@ -11,6 +11,6 @@ export class FindCategoryBySlugUseCase {
   ) {}
 
   async execute(slug: string): Promise<Category | null> {
-    return this.categoryRepository.findOne({ where: { slug }, relations: ['variants'] });
+    return this.categoryRepository.findOne({ where: { slug } });
   }
 }

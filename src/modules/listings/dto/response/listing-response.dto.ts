@@ -10,10 +10,12 @@ export class ListingResponseDto implements ListingResponseShape {
   userId: string;
   categoryId: string;
   category?: ListingResponseShape['category'];
+  seller?: ListingResponseShape['seller'];
   title: string;
   description: string;
   price: number;
   location: string;
+  city: string | null;
   sector: string | null;
   latitude: number | null;
   longitude: number | null;
@@ -23,11 +25,10 @@ export class ListingResponseDto implements ListingResponseShape {
   isBoosted: boolean;
   boostedUntil: Date | null;
   isFavorited: boolean | null;
-  myRating: number | null;
   createdAt: Date;
   updatedAt: Date;
   photos?: ListingResponseShape['photos'];
-  variants?: ListingResponseShape['variants'];
+  attributeValues?: ListingResponseShape['attributeValues'];
 
   constructor(listing: Listing, context?: ListingUserContext) {
     this.id = listing.id;
@@ -39,10 +40,20 @@ export class ListingResponseDto implements ListingResponseShape {
       name: listing.category?.name ?? null,
       slug: listing.category?.slug ?? null,
     };
+    if (listing.user) {
+      this.seller = {
+        id: listing.user.id,
+        name: listing.user.name,
+        phone: listing.user.phone ?? null,
+        whatsapp: listing.user.whatsapp ?? null,
+        city: listing.user.city ?? null,
+      };
+    }
     this.title = listing.title;
     this.description = listing.description;
     this.price = parseFloat(listing.price);
     this.location = listing.location;
+    this.city = listing.city ?? null;
     this.sector = listing.sector ?? null;
     this.latitude = listing.latitude != null ? parseFloat(listing.latitude) : null;
     this.longitude = listing.longitude != null ? parseFloat(listing.longitude) : null;
@@ -52,20 +63,21 @@ export class ListingResponseDto implements ListingResponseShape {
     this.isBoosted = listing.isBoosted ?? false;
     this.boostedUntil = listing.boostedUntil ?? null;
     this.isFavorited = context?.isFavorited ?? null;
-    this.myRating = context?.myRating ?? null;
     this.createdAt = listing.createdAt;
     this.updatedAt = listing.updatedAt;
-    this.photos = listing.photos?.map((p) => ({
-      id: p.id,
-      filename: p.filename,
-      url: p.url,
-      thumbnailUrl: p.thumbnailUrl ?? null,
+    this.photos = listing.photos?.map((photo) => ({
+      id: photo.id,
+      filename: photo.filename,
+      url: photo.url,
+      thumbnailUrl: photo.thumbnailUrl ?? null,
     }));
-    this.variants = listing.variants?.map((lv) => ({
-      id: lv.id,
-      categoryVariantId: lv.categoryVariantId,
-      categoryVariantKey: lv.categoryVariant?.key,
-      value: lv.value,
+    this.attributeValues = listing.attributeValues?.map((attributeValue) => ({
+      id: attributeValue.id,
+      attributeId: attributeValue.attributeId,
+      attributeName: attributeValue.attribute?.name ?? '',
+      attributeKey: attributeValue.attribute?.key ?? '',
+      valueType: attributeValue.attribute?.valueType ?? 'text',
+      value: attributeValue.value,
     }));
   }
 }

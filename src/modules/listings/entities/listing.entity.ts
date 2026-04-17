@@ -14,12 +14,9 @@ import { Category } from '../../categories/entities/category.entity';
 import { User } from '../../users/entities/user.entity';
 import { LISTING_STATUS, type ListingStatus } from '../constants/listing-status.constants';
 import { ListingPhoto } from './listing-photo.entity';
-import { ListingVariantValue } from './listing-variant-value.entity';
-import { Comment } from './comment.entity';
-import { Rating } from './rating.entity';
 import { Favorite } from './favorite.entity';
 import { ContactRequest } from './contact-request.entity';
-import { Appointment } from './appointment.entity';
+import { ListingAttributeValue } from './listing-attribute-value.entity';
 
 @Entity('listings')
 export class Listing {
@@ -46,6 +43,9 @@ export class Listing {
 
   @Column({ length: 120 })
   location!: string;
+
+  @Column({ type: 'varchar', length: 80, nullable: true })
+  city!: string | null;
 
   @Column({ type: 'varchar', length: 80, nullable: true })
   sector!: string | null;
@@ -95,21 +95,12 @@ export class Listing {
   @OneToMany(() => ListingPhoto, (p) => p.listing, { cascade: true })
   photos!: ListingPhoto[];
 
-  @OneToMany(() => ListingVariantValue, (v) => v.listing, { cascade: true })
-  variants!: ListingVariantValue[];
-
-  @OneToMany(() => Comment, (c) => c.listing)
-  comments!: Comment[];
-
-  @OneToMany(() => Rating, (r) => r.listing)
-  ratings!: Rating[];
-
   @OneToMany(() => Favorite, (f) => f.listing)
   favorites!: Favorite[];
 
-  @OneToMany(() => ContactRequest, (cr) => cr.listing)
+  @OneToMany(() => ContactRequest, (contactRequest) => contactRequest.listing)
   contactRequests!: ContactRequest[];
 
-  @OneToMany(() => Appointment, (a) => a.listing)
-  appointments!: Appointment[];
+  @OneToMany(() => ListingAttributeValue, (attributeValue) => attributeValue.listing, { cascade: true })
+  attributeValues!: ListingAttributeValue[];
 }

@@ -6,8 +6,8 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { CategoryVariant } from './category-variant.entity';
 import { Listing } from '../../listings/entities/listing.entity';
+import { CategoryAttribute } from './category-attribute.entity';
 
 @Entity('categories')
 export class Category {
@@ -32,9 +32,9 @@ export class Category {
   @UpdateDateColumn()
   updatedAt!: Date;
 
-  @OneToMany(() => CategoryVariant, (v) => v.category)
-  variants!: CategoryVariant[];
-
-  @OneToMany(() => Listing, (l) => l.category)
+  @OneToMany(() => Listing, (listing) => listing.category)
   listings!: Listing[];
+
+  @OneToMany(() => CategoryAttribute, (attribute) => attribute.category, { cascade: true })
+  attributes!: CategoryAttribute[];
 }

@@ -22,8 +22,6 @@ export class ListListingsUseCase {
       .createQueryBuilder('l')
       .leftJoinAndSelect('l.category', 'c')
       .leftJoinAndSelect('l.photos', 'p')
-      .leftJoinAndSelect('l.variants', 'lv')
-      .leftJoinAndSelect('lv.categoryVariant', 'cv')
       .where('l.isActive = :isActive', { isActive: true })
       .andWhere('l.status = :status', { status: LISTING_STATUS.ACTIVE })
       .andWhere('(l.expiresAt IS NULL OR l.expiresAt > NOW())');
@@ -46,9 +44,10 @@ export class ListListingsUseCase {
     if (!query.search?.trim()) {
       return query;
     }
-    qb.andWhere(`l."searchVector" @@ plainto_tsquery('spanish', :searchTerm)`, {
-      searchTerm: query.search.trim(),
-    });
+    qb.andWhere(
+      `(l."searchVector" @@ plainto_tsquery('spanish', :searchTerm) OR c.name ILIKE :categorySearch)`,
+      { searchTerm: query.search.trim(), categorySearch: `%${query.search.trim()}%` },
+    );
     return { ...query, search: undefined };
   }
 }

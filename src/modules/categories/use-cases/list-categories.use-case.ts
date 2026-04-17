@@ -17,7 +17,10 @@ export class ListCategoriesUseCase {
   ) {}
 
   async execute(query: PaginationQuery): Promise<PaginationResult<Category>> {
-    const qb = this.categoryRepository.createQueryBuilder('c').leftJoinAndSelect('c.variants', 'v');
+    const qb = this.categoryRepository
+      .createQueryBuilder('c')
+      .leftJoinAndSelect('c.attributes', 'attributes')
+      .orderBy('attributes.name', 'ASC');
 
     return paginate<Category>(qb, query, {
       searchFields: ['name', 'slug', 'description'],

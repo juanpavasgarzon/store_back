@@ -18,7 +18,7 @@ import { SetUserRoleUseCase } from '../use-cases/set-user-role.use-case';
 import { DeleteUserUseCase } from '../use-cases/delete-user.use-case';
 import { SetUserActiveDto } from '../dto/request/set-user-active.dto';
 import { SetUserRoleDto } from '../dto/request/set-user-role.dto';
-import { UserResponseDto } from '../dto/response/user-response.dto';
+import { UserResponse } from '../dto/response/user-response.dto';
 import {
   PaginationResponse,
   ParsePaginationQueryPipe,
@@ -39,10 +39,10 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   async list(
     @Query(ParsePaginationQueryPipe) query: PaginationRequest,
-  ): Promise<PaginationResponse<UserResponseDto>> {
+  ): Promise<PaginationResponse<UserResponse>> {
     const result = await this.listUsersUseCase.execute(query);
     return new PaginationResponse(
-      result.data.map((user) => new UserResponseDto(user)),
+      result.data.map((user) => new UserResponse(user)),
       result.meta,
     );
   }
@@ -54,9 +54,9 @@ export class UsersController {
     @CurrentUser() actor: IUser,
     @Param('id') id: string,
     @Body() dto: SetUserActiveDto,
-  ): Promise<UserResponseDto> {
+  ): Promise<UserResponse> {
     const user = await this.setUserActiveUseCase.execute(id, dto.isActive, actor.id);
-    return new UserResponseDto(user);
+    return new UserResponse(user);
   }
 
   @RequirePermissions(PERMISSIONS.USERS_ROLE_UPDATE)
@@ -66,9 +66,9 @@ export class UsersController {
     @CurrentUser() actor: IUser,
     @Param('id') id: string,
     @Body() dto: SetUserRoleDto,
-  ): Promise<UserResponseDto> {
+  ): Promise<UserResponse> {
     const user = await this.setUserRoleUseCase.execute(id, dto.role, actor);
-    return new UserResponseDto(user);
+    return new UserResponse(user);
   }
 
   @RequirePermissions(PERMISSIONS.USERS_DELETE)

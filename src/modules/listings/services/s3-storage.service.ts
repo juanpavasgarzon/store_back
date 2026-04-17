@@ -59,7 +59,9 @@ export class S3StorageService implements IStorageService {
   async deleteFile(relativePath: string): Promise<void> {
     await this.s3
       .send(new DeleteObjectCommand({ Bucket: this.bucket, Key: relativePath }))
-      .catch((err: unknown) => this.logger.warn(`Delete failed for ${relativePath}: ${String(err)}`));
+      .catch((err: unknown) =>
+        this.logger.warn(`Delete failed for ${relativePath}: ${String(err)}`),
+      );
   }
 
   async readFile(relativePath: string): Promise<Readable> {

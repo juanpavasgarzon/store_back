@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Controller,
   Get,
   Post,
@@ -25,14 +24,10 @@ import { CreateListingUseCase } from '../use-cases/create-listing.use-case';
 import { UpdateListingUseCase } from '../use-cases/update-listing.use-case';
 import { DeleteListingUseCase } from '../use-cases/delete-listing.use-case';
 import { ListListingsUseCase } from '../use-cases/list-listings.use-case';
-import { ListNearbyListingsUseCase } from '../use-cases/list-nearby-listings.use-case';
 import { GetListingUseCase } from '../use-cases/get-listing.use-case';
 import { GetListingByCodeUseCase } from '../use-cases/get-listing-by-code.use-case';
 import { RegisterListingViewUseCase } from '../use-cases/register-listing-view.use-case';
 import { GetListingStatsUseCase } from '../use-cases/get-listing-stats.use-case';
-import { GetListingPriceHistoryUseCase } from '../use-cases/get-listing-price-history.use-case';
-import { CompareListingsUseCase } from '../use-cases/compare-listings.use-case';
-import { BoostListingUseCase } from '../use-cases/boost-listing.use-case';
 import { ExportListingsCsvUseCase } from '../use-cases/export-listings-csv.use-case';
 import { CountListingsUseCase } from '../use-cases/count-listings.use-case';
 import {
@@ -41,12 +36,8 @@ import {
 } from '../use-cases/list-trending-listings.use-case';
 import { CreateListingRequestDto } from '../dto/request/create-listing.dto';
 import { UpdateListingRequestDto } from '../dto/request/update-listing.dto';
-import { CompareListingsRequestDto } from '../dto/request/compare-listings.dto';
-import { BoostListingRequestDto } from '../dto/request/boost-listing.dto';
-import { NearbyQueryDto } from '../dto/request/nearby-query.dto';
 import { ListingResponseDto } from '../dto/response/listing-response.dto';
 import { ListingStatsResponseDto } from '../dto/response/listing-stats-response.dto';
-import { ListingPriceHistoryResponseDto } from '../dto/response/listing-price-history-response.dto';
 import {
   PaginationResponse,
   ParsePaginationQueryPipe,
@@ -62,14 +53,10 @@ export class ListingController {
     private readonly updateListingUseCase: UpdateListingUseCase,
     private readonly deleteListingUseCase: DeleteListingUseCase,
     private readonly listListingsUseCase: ListListingsUseCase,
-    private readonly listNearbyListingsUseCase: ListNearbyListingsUseCase,
     private readonly getListingUseCase: GetListingUseCase,
     private readonly getListingByCodeUseCase: GetListingByCodeUseCase,
     private readonly registerListingViewUseCase: RegisterListingViewUseCase,
     private readonly getListingStatsUseCase: GetListingStatsUseCase,
-    private readonly getListingPriceHistoryUseCase: GetListingPriceHistoryUseCase,
-    private readonly compareListingsUseCase: CompareListingsUseCase,
-    private readonly boostListingUseCase: BoostListingUseCase,
     private readonly exportListingsCsvUseCase: ExportListingsCsvUseCase,
     private readonly listTrendingListingsUseCase: ListTrendingListingsUseCase,
     private readonly countListingsUseCase: CountListingsUseCase,
@@ -110,52 +97,6 @@ export class ListingController {
       result.data.map((listing) => new ListingResponseDto(listing)),
       result.meta,
     );
-  }
-
-  @Public()
-  @Get('nearby')
-  @HttpCode(HttpStatus.OK)
-  @UseInterceptors(CacheInterceptor)
-  @CacheTTL(60000)
-  async listNearby(
-    @Query() nearbyQuery: NearbyQueryDto,
-  ): Promise<PaginationResponse<ListingResponseDto>> {
-    const parsedLat = parseFloat(nearbyQuery.lat);
-    const parsedLng = parseFloat(nearbyQuery.lng);
-    if (!Number.isFinite(parsedLat) || !Number.isFinite(parsedLng)) {
-      throw new BadRequestException('lat and lng must be valid numbers');
-    }
-    const parsedRadius = nearbyQuery.radius != null ? parseFloat(nearbyQuery.radius) : undefined;
-    if (parsedRadius !== undefined && !Number.isFinite(parsedRadius)) {
-      throw new BadRequestException('radius must be a valid number');
-    }
-    const paginationQuery: PaginationRequest = {
-      limit: nearbyQuery.limit,
-      cursor: nearbyQuery.cursor,
-      search: nearbyQuery.search,
-      sort: nearbyQuery.sort,
-      filters: nearbyQuery.filters,
-      $or: nearbyQuery.$or,
-      $and: nearbyQuery.$and,
-    };
-    const result = await this.listNearbyListingsUseCase.execute(
-      parsedLat,
-      parsedLng,
-      parsedRadius,
-      paginationQuery,
-    );
-    return new PaginationResponse(
-      result.data.map((listing) => new ListingResponseDto(listing)),
-      result.meta,
-    );
-  }
-
-  @Public()
-  @Post('compare')
-  @HttpCode(HttpStatus.OK)
-  async compare(@Body() dto: CompareListingsRequestDto): Promise<ListingResponseDto[]> {
-    const listings = await this.compareListingsUseCase.execute(dto.ids);
-    return listings.map((l) => new ListingResponseDto(l));
   }
 
   @Public()
@@ -214,17 +155,6 @@ export class ListingController {
     return this.getListingStatsUseCase.execute(id, user);
   }
 
-  @RequirePermissions(PERMISSIONS.LISTINGS_READ)
-  @Get(':id/price-history')
-  @HttpCode(HttpStatus.OK)
-  async getPriceHistory(
-    @Param('id') id: string,
-    @CurrentUser() user: IUser,
-  ): Promise<ListingPriceHistoryResponseDto[]> {
-    const history = await this.getListingPriceHistoryUseCase.execute(id, user);
-    return history.map((h) => new ListingPriceHistoryResponseDto(h));
-  }
-
   @RequirePermissions(PERMISSIONS.LISTINGS_CREATE)
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -245,18 +175,6 @@ export class ListingController {
     @Body() request: UpdateListingRequestDto,
   ): Promise<ListingResponseDto> {
     const listing = await this.updateListingUseCase.execute(id, user, request);
-    return new ListingResponseDto(listing);
-  }
-
-  @RequirePermissions(PERMISSIONS.LISTINGS_BOOST_CREATE)
-  @Post(':id/boost')
-  @HttpCode(HttpStatus.CREATED)
-  async boost(
-    @CurrentUser() user: IUser,
-    @Param('id') id: string,
-    @Body() request: BoostListingRequestDto,
-  ): Promise<ListingResponseDto> {
-    const listing = await this.boostListingUseCase.execute(id, request, user);
     return new ListingResponseDto(listing);
   }
 
