@@ -20,7 +20,7 @@ export class ListMyFavoritesUseCase {
   async execute(user: IUser, query: PaginationQuery): Promise<PaginationResult<Favorite>> {
     const qb = this.favoriteRepository
       .createQueryBuilder('f')
-      .leftJoinAndSelect('f.listing', 'l')
+      .innerJoinAndSelect('f.listing', 'l', 'l.deletedAt IS NULL AND l.isActive = true')
       .leftJoinAndSelect('l.category', 'c')
       .leftJoinAndSelect('l.photos', 'p')
       .where('f.userId = :userId', { userId: user.id });

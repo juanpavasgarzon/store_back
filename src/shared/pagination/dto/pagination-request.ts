@@ -1,6 +1,7 @@
 import { IsOptional, IsString, Min, Max, IsNumber, IsArray, IsObject } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import type { PaginationQuery, SortRule } from '../interfaces/pagination-query.interface';
+import { parseSortString } from '../utils/parse-query-string.util';
 
 export class PaginationRequest implements PaginationQuery {
   @IsOptional()
@@ -19,6 +20,11 @@ export class PaginationRequest implements PaginationQuery {
   search?: string;
 
   @IsOptional()
+  @Transform(({ value }) => {
+    if (Array.isArray(value)) return value;
+    if (typeof value === 'string') return parseSortString(value);
+    return undefined;
+  })
   @IsArray()
   sort?: SortRule[];
 
