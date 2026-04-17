@@ -1,18 +1,10 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Listing } from './listing.entity';
 
-@Entity('listing_views')
-export class ListingView {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
+import { BaseEntity } from '../../../shared/base.entity';
 
+@Entity('listing_views')
+export class ListingView extends BaseEntity {
   @Column('uuid')
   listingId!: string;
 

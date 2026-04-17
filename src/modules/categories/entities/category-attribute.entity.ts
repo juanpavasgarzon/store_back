@@ -1,23 +1,14 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Category } from './category.entity';
 import {
   ATTRIBUTE_VALUE_TYPE,
   type AttributeValueType,
 } from '../constants/attribute-value-type.constants';
 
-@Entity('category_attributes')
-export class CategoryAttribute {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
+import { BaseEntity } from '../../../shared/base.entity';
 
+@Entity('category_attributes')
+export class CategoryAttribute extends BaseEntity {
   @Column('uuid')
   categoryId!: string;
 

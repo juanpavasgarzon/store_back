@@ -1,22 +1,13 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Listing } from './listing.entity';
 import { REPORT_REASON, type ReportReason } from '../constants/report-reason.constants';
 import { REPORT_STATUS, type ReportStatus } from '../constants/report-status.constants';
 
-@Entity('listing_reports')
-export class ListingReport {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
+import { BaseEntity } from '../../../shared/base.entity';
 
+@Entity('listing_reports')
+export class ListingReport extends BaseEntity {
   @Column('uuid')
   userId!: string;
 

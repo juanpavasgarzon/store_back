@@ -1,6 +1,5 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
@@ -18,11 +17,10 @@ import { Favorite } from './favorite.entity';
 import { ContactRequest } from './contact-request.entity';
 import { ListingAttributeValue } from './listing-attribute-value.entity';
 
-@Entity('listings')
-export class Listing {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
+import { BaseEntity } from '../../../shared/base.entity';
 
+@Entity('listings')
+export class Listing extends BaseEntity {
   @Column({ length: 30, unique: true })
   code!: string;
 

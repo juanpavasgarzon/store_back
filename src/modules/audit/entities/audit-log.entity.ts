@@ -1,11 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { Entity, Column, CreateDateColumn } from 'typeorm';
 import type { AuditAction } from '../constants/audit-action.constants';
 
-@Entity('audit_logs')
-export class AuditLog {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
+import { BaseEntity } from '../../../shared/base.entity';
 
+@Entity('audit_logs')
+export class AuditLog extends BaseEntity {
   @Column({ type: 'uuid', nullable: true })
   actorId!: string | null;
 

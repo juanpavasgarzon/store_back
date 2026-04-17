@@ -1,6 +1,5 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
@@ -11,12 +10,11 @@ import {
 import { User } from '../../users/entities/user.entity';
 import { Listing } from './listing.entity';
 
+import { BaseEntity } from '../../../shared/base.entity';
+
 @Entity('favorites')
 @Unique(['userId', 'listingId'])
-export class Favorite {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
-
+export class Favorite extends BaseEntity {
   @Column('uuid')
   userId!: string;
 

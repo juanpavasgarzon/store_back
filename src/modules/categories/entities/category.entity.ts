@@ -1,19 +1,11 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  OneToMany,
-} from 'typeorm';
+import { Entity, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { Listing } from '../../listings/entities/listing.entity';
 import { CategoryAttribute } from './category-attribute.entity';
 
-@Entity('categories')
-export class Category {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
+import { BaseEntity } from '../../../shared/base.entity';
 
+@Entity('categories')
+export class Category extends BaseEntity {
   @Column({ length: 100 })
   name!: string;
 
