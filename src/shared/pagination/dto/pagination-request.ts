@@ -29,6 +29,18 @@ export class PaginationRequest implements PaginationQuery {
   sort?: SortRule[];
 
   @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  minPrice?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  maxPrice?: number;
+
+  @IsOptional()
   @IsObject()
   filters?: Record<string, Record<string, unknown>>;
 
