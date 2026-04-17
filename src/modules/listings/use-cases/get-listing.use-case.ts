@@ -22,6 +22,7 @@ export class GetListingUseCase {
   async execute(id: string, userId?: string | null): Promise<ListingWithContext> {
     const listing = await this.listingRepository.findOne({
       where: { id },
+      withDeleted: true,
       relations: [
         'category',
         'category.attributes',

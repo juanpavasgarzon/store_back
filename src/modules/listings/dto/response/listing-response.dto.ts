@@ -56,7 +56,7 @@ export class ListingResponseDto implements ListingResponseShape {
     this.sector = listing.sector ?? null;
     this.latitude = listing.latitude != null ? parseFloat(listing.latitude) : null;
     this.longitude = listing.longitude != null ? parseFloat(listing.longitude) : null;
-    this.status = listing.status;
+    this.status = listing.deletedAt ? 'deleted' : listing.status;
     this.expiresAt = listing.expiresAt ?? null;
     this.isActive = listing.isActive ?? true;
     this.isBoosted = listing.isBoosted ?? false;

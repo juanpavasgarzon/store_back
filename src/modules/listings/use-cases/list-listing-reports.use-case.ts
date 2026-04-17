@@ -19,6 +19,7 @@ export class ListListingReportsUseCase {
   async execute(query: PaginationQuery): Promise<PaginationResult<ListingReport>> {
     const qb = this.listingReportRepository
       .createQueryBuilder('r')
+      .withDeleted()
       .leftJoinAndSelect('r.listing', 'l')
       .leftJoinAndSelect('r.user', 'u');
 
