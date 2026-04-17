@@ -4,14 +4,13 @@ import { envSchema } from './env.validation';
 import { appConfig } from './app.config';
 import { databaseConfig } from './database.config';
 import { jwtConfig } from './jwt.config';
-import { uploadsConfig } from './uploads.config';
 import { storageConfig } from './storage.config';
 
 @Module({
   imports: [
     NestConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, databaseConfig, jwtConfig, uploadsConfig, storageConfig],
+      load: [appConfig, databaseConfig, jwtConfig, storageConfig],
       validationSchema: envSchema,
     }),
   ],

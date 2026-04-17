@@ -12,7 +12,6 @@ export const envSchema = Joi.object({
   DB_DATABASE: Joi.string().required(),
   JWT_SECRET: Joi.string().required(),
   JWT_EXPIRES_IN: Joi.string().required(),
-  UPLOADS_DIR: Joi.string().optional().allow(''),
   FRONTEND_URL: Joi.string().uri().required(),
   S3_ENDPOINT: Joi.string().uri().optional(),
   S3_BUCKET: Joi.string().optional(),
