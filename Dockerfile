@@ -28,8 +28,7 @@ COPY --from=build /app/dist ./dist
 COPY --from=deps-prod /app/node_modules ./node_modules
 COPY --from=build /app/package.json ./
 COPY docker-entrypoint.sh ./
-RUN mkdir -p uploads \
-    && chmod +x docker-entrypoint.sh \
+RUN chmod +x docker-entrypoint.sh \
     && chown -R node:node /app
 EXPOSE 3001
 USER node
