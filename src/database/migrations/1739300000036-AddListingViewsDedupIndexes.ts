@@ -16,6 +16,8 @@ export class AddListingViewsDedupIndexes1739300000036 implements MigrationInterf
 
   async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`DROP INDEX IF EXISTS "IDX_listing_views_listingId_userId_viewedAt"`);
-    await queryRunner.query(`DROP INDEX IF EXISTS "IDX_listing_views_listingId_ipAddress_viewedAt"`);
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "IDX_listing_views_listingId_ipAddress_viewedAt"`,
+    );
   }
 }

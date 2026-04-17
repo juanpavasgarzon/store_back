@@ -47,7 +47,9 @@ export class CreateListingUseCase {
     const savedListing = await this.listingRepository.save(listingEntity);
 
     if (dto.attributeValues && dto.attributeValues.length > 0) {
-      const categoryAttributes = await this.categoryService.findAttributesByCategoryId(dto.categoryId);
+      const categoryAttributes = await this.categoryService.findAttributesByCategoryId(
+        dto.categoryId,
+      );
       const validAttributeIds = new Set(categoryAttributes.map((attribute) => attribute.id));
 
       const attributeValueEntities = dto.attributeValues

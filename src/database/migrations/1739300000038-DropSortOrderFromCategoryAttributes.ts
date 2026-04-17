@@ -8,6 +8,8 @@ export class DropSortOrderFromCategoryAttributes1739300000038 implements Migrati
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`ALTER TABLE "category_attributes" ADD COLUMN IF NOT EXISTS "sortOrder" integer NOT NULL DEFAULT 0`);
+    await queryRunner.query(
+      `ALTER TABLE "category_attributes" ADD COLUMN IF NOT EXISTS "sortOrder" integer NOT NULL DEFAULT 0`,
+    );
   }
 }

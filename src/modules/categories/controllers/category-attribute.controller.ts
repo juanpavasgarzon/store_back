@@ -55,7 +55,11 @@ export class CategoryAttributeController {
     @Param('attributeId') attributeId: string,
     @Body() request: UpdateCategoryAttributeRequest,
   ): Promise<CategoryAttributeResponse> {
-    const attribute = await this.updateCategoryAttributeUseCase.execute(categoryId, attributeId, request);
+    const attribute = await this.updateCategoryAttributeUseCase.execute(
+      categoryId,
+      attributeId,
+      request,
+    );
     return new CategoryAttributeResponse(attribute);
   }
 

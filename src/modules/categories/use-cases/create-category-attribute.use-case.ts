@@ -13,7 +13,10 @@ export class CreateCategoryAttributeUseCase {
     private readonly findCategoryByIdUseCase: FindCategoryByIdUseCase,
   ) {}
 
-  async execute(categoryId: string, dto: CreateCategoryAttributeRequest): Promise<CategoryAttribute> {
+  async execute(
+    categoryId: string,
+    dto: CreateCategoryAttributeRequest,
+  ): Promise<CategoryAttribute> {
     const category = await this.findCategoryByIdUseCase.execute(categoryId);
     if (!category) {
       throw new NotFoundException('Category not found');

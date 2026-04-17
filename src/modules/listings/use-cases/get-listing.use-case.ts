@@ -22,7 +22,14 @@ export class GetListingUseCase {
   async execute(id: string, userId?: string | null): Promise<ListingWithContext> {
     const listing = await this.listingRepository.findOne({
       where: { id },
-      relations: ['category', 'category.attributes', 'photos', 'user', 'attributeValues', 'attributeValues.attribute'],
+      relations: [
+        'category',
+        'category.attributes',
+        'photos',
+        'user',
+        'attributeValues',
+        'attributeValues.attribute',
+      ],
     });
     if (!listing) {
       throw new NotFoundException('Listing not found');

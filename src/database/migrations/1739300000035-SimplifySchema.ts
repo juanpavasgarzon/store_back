@@ -16,10 +16,16 @@ export class SimplifySchema1739300000035 implements MigrationInterface {
     await queryRunner.query(`ALTER TABLE "contact_requests" DROP COLUMN IF EXISTS "respondedAt"`);
     await queryRunner.query(`ALTER TABLE "contact_requests" DROP COLUMN IF EXISTS "updatedAt"`);
 
-    await queryRunner.query(`ALTER TABLE "listings" ADD COLUMN IF NOT EXISTS "city" varchar(80) NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "listings" ADD COLUMN IF NOT EXISTS "city" varchar(80) NULL`,
+    );
 
-    await queryRunner.query(`ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "phone" varchar(20) NULL`);
-    await queryRunner.query(`ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "whatsapp" varchar(20) NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "phone" varchar(20) NULL`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "whatsapp" varchar(20) NULL`,
+    );
     await queryRunner.query(`ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "city" varchar(80) NULL`);
   }
 
@@ -28,8 +34,14 @@ export class SimplifySchema1739300000035 implements MigrationInterface {
     await queryRunner.query(`ALTER TABLE "users" DROP COLUMN IF EXISTS "whatsapp"`);
     await queryRunner.query(`ALTER TABLE "users" DROP COLUMN IF EXISTS "phone"`);
     await queryRunner.query(`ALTER TABLE "listings" DROP COLUMN IF EXISTS "city"`);
-    await queryRunner.query(`ALTER TABLE "contact_requests" ADD COLUMN IF NOT EXISTS "updatedAt" timestamptz NOT NULL DEFAULT now()`);
-    await queryRunner.query(`ALTER TABLE "contact_requests" ADD COLUMN IF NOT EXISTS "respondedAt" timestamptz NULL`);
-    await queryRunner.query(`ALTER TABLE "contact_requests" ADD COLUMN IF NOT EXISTS "status" varchar(20) NOT NULL DEFAULT 'pending'`);
+    await queryRunner.query(
+      `ALTER TABLE "contact_requests" ADD COLUMN IF NOT EXISTS "updatedAt" timestamptz NOT NULL DEFAULT now()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "contact_requests" ADD COLUMN IF NOT EXISTS "respondedAt" timestamptz NULL`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "contact_requests" ADD COLUMN IF NOT EXISTS "status" varchar(20) NOT NULL DEFAULT 'pending'`,
+    );
   }
 }

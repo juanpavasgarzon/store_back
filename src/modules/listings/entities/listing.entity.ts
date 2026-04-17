@@ -101,6 +101,8 @@ export class Listing {
   @OneToMany(() => ContactRequest, (contactRequest) => contactRequest.listing)
   contactRequests!: ContactRequest[];
 
-  @OneToMany(() => ListingAttributeValue, (attributeValue) => attributeValue.listing, { cascade: true })
+  @OneToMany(() => ListingAttributeValue, (attributeValue) => attributeValue.listing, {
+    cascade: true,
+  })
   attributeValues!: ListingAttributeValue[];
 }

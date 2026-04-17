@@ -8,7 +8,10 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Category } from './category.entity';
-import { ATTRIBUTE_VALUE_TYPE, type AttributeValueType } from '../constants/attribute-value-type.constants';
+import {
+  ATTRIBUTE_VALUE_TYPE,
+  type AttributeValueType,
+} from '../constants/attribute-value-type.constants';
 
 @Entity('category_attributes')
 export class CategoryAttribute {

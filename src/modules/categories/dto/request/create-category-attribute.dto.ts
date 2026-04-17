@@ -8,7 +8,10 @@ import {
   MinLength,
   ArrayMaxSize,
 } from 'class-validator';
-import { ATTRIBUTE_VALUE_TYPE, type AttributeValueType } from '../../constants/attribute-value-type.constants';
+import {
+  ATTRIBUTE_VALUE_TYPE,
+  type AttributeValueType,
+} from '../../constants/attribute-value-type.constants';
 
 export class CreateCategoryAttributeRequest {
   @IsString()
