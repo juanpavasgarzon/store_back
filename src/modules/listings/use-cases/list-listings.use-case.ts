@@ -45,8 +45,8 @@ export class ListListingsUseCase {
 
     return paginate<Listing>(qb, paginationQuery, {
       defaultSort: [
-        { field: 'isBoosted', order: SortOrder.DESC },
         { field: 'createdAt', order: SortOrder.DESC },
+        { field: 'isBoosted', order: SortOrder.DESC },
       ],
       maxFilterDepth: 2,
     });

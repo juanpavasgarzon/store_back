@@ -5,7 +5,10 @@ export function getSortValue<T extends ObjectLiteral>(
   sortBy: keyof T,
   item: T,
 ): string | number | Date {
-  const value = item[sortBy] ?? item.id;
+  const value = item[sortBy];
+  if (value == null || typeof value === 'boolean') {
+    return item.id as string;
+  }
   return value as string | number | Date;
 }
 
